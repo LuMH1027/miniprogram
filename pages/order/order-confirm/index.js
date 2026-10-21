@@ -48,11 +48,13 @@ async function rollbackReservedSkus(reservedSkus = []) {
 }
 
 async function createOrderItemFromSku({ count, orderId, skuId, reservedSkus }) {
+  if (!Number.isInteger(count) || count < 1) throw new Error('点单数量无效');
   const latestSku = await getSkuDetail(skuId);
+  const previousCount = latestSku.count;
   const finalCount = latestSku.count - count;
 
   // check if sku is enough
-  if (finalCount < 0) {
+  if (!Number.isInteger(finalCount) || finalCount < 0) {
     return Promise.reject({ reason: 'SKU_NOT_ENOUGH' });
   }
 
@@ -64,7 +66,7 @@ async function createOrderItemFromSku({ count, orderId, skuId, reservedSkus }) {
         count: finalCount,
       },
     });
-    reservedSkus && reservedSkus.push({ skuId, count: latestSku.count });
+    reservedSkus && reservedSkus.push({ skuId, count: previousCount });
     try {
       // create order item
       await createOrderItem({ count, orderId, skuId });
@@ -116,11 +118,13 @@ Page({
     goodsList: [],
     cartItems: [],
     totalSalePrice: 0,
+    totalGoodsCount: 0,
     directSku: null,
     remark: '',
     remarkSourceText: '',
     remarkMaxLength: REMARK_MAX_LENGTH,
     submitting: false,
+    readyToSubmit: false,
   },
 
   payLock: false,
@@ -128,6 +132,7 @@ Page({
   type: null,
 
   async onLoadFromCart(cartIds) {
+    this.setData({ readyToSubmit: false });
     if (typeof cartIds !== 'string') {
       console.error('invalid cart item ids', cartIds);
       this.failedAndBack('获取点单车信息失败');
@@ -147,6 +152,8 @@ Page({
       const totalSalePrice = goodsList.reduce((acc, cur) => acc + cur.price * cur.num, 0);
       this.setData({
         goodsList,
+        readyToSubmit: true,
+        totalGoodsCount: goodsList.reduce((sum, item) => sum + item.num, 0),
         totalSalePrice,
         cartItems,
       });
@@ -155,8 +162,9 @@ Page({
     }
   },
   async onLoadFromDirect(countStr, skuId) {
-    const count = parseInt(countStr);
-    if (typeof count !== 'number' || isNaN(count) || typeof skuId !== 'string') {
+    this.setData({ readyToSubmit: false });
+    const count = Number(countStr);
+    if (!Number.isInteger(count) || count < 1 || typeof skuId !== 'string') {
       console.error('invalid cunt or skiId', count, skuId);
       this.failedAndBack('初始化信息有误');
       return;
@@ -164,6 +172,7 @@ Page({
 
     try {
       const sku = await getSkuDetail(skuId);
+      if (count > sku.count) throw new Error('超过可点数量了');
       sku.image = await getSingleCloudImageTempUrl(sku.image);
 
       const goodsList = [
@@ -179,6 +188,8 @@ Page({
       const totalSalePrice = goodsList.reduce((acc, cur) => acc + cur.price * cur.num, 0);
       this.setData({
         goodsList,
+        readyToSubmit: true,
+        totalGoodsCount: goodsList.reduce((sum, item) => sum + item.num, 0),
         totalSalePrice,
         directSku: sku,
       });
@@ -190,7 +201,13 @@ Page({
   async onLoad(options) {
     this.type = options?.type;
     if (typeof options?.remark === 'string') {
-      this.setData({ remark: sanitizeRemark(options.remark) });
+      let remark = options.remark;
+      try {
+        remark = decodeURIComponent(remark);
+      } catch (error) {
+        console.warn('[order-confirm:invalid-remark-encoding]', error);
+      }
+      this.setData({ remark: sanitizeRemark(remark) });
     }
     if (options?.remarkSource === 'detail-quick') {
       this.setData({ remarkSourceText: '来自详情页备注快捷词，可继续修改' });
@@ -288,7 +305,7 @@ Page({
      * 3.删除购物车项
      */
 
-    const { cartItems, userAddress, remark } = this.data;
+    const { cartItems, userAddress, goodsList, remark } = this.data;
     let orderId;
     const reservedSkus = [];
     try {
@@ -310,10 +327,11 @@ Page({
       orderId = id;
       console.info('[order-confirm:create:cart:order-created]', { orderId });
 
-      await Promise.all(cartItems.map(async (cartItem) => {
+      for (const cartItem of cartItems) {
         await createOrderItemFromCartItem(cartItem, orderId, reservedSkus);
-      }));
+      }
       console.info('[order-confirm:create:cart:items-created]', { orderId });
+      this.setData({ readyToSubmit: false });
 
       try {
         await Promise.all(cartItems.map(async (cartItem) => {
@@ -381,6 +399,7 @@ Page({
 
       await createOrderItemFromSku({ count: goods.num, orderId, skuId: directSku._id, reservedSkus });
       console.info('[order-confirm:create:direct:item-created]', { orderId });
+      this.setData({ readyToSubmit: false });
       const totalPrice = goods.price * goods.num;
       console.log('[order-confirm:notify:direct:start]', {
         orderId,
@@ -414,6 +433,10 @@ Page({
 
   // 提交订单
   async submitOrder() {
+    if (!this.data.readyToSubmit) {
+      this.toast('菜品信息还没准备好，请返回重试');
+      return;
+    }
     if (this.payLock || this.data.submitting) {
       console.info('[order-confirm:submit:skip-duplicate]');
       return;

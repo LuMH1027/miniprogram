@@ -1,10 +1,6 @@
 <view class="goods-list-container">
-  <view class="empty-wrap" wx:if="{{goodsList.length === 0 && hasLoaded}}">
-    <t-empty t-class="empty-tips" size="240rpx" description="暂无相关菜品" />
-  </view>
-  <view class="category-goods-list" wx:if="{{goodsList.length}}">
-    <goods-list wr-class="wr-goods-list" goodsList="{{goodsList}}" bind:click="gotoGoodsDetail" bind:addcart="handleAddCart" />
-  </view>
-  <load-more wx:if="{{goodsList.length > 0}}" status="{{loadMoreStatus}}" no-more-text="没有更多了" />
+  <view class="menu-heading"><view class="menu-title">{{categoryTitle}}</view><view class="menu-subtitle">{{goodsList.length ? goodsList.length + ' 款可选 · 点开看看规格' : '挑一份今天想吃的'}}</view></view>
+  <view class="category-goods-list"><goods-list wr-class="wr-goods-list" goodsList="{{goodsList}}" bind:click="gotoGoodsDetail" bind:addcart="handleAddCart" /></view>
+  <load-more list-is-empty="{{!goodsList.length}}" status="{{goodsListLoadStatus}}" bind:retry="onReTry"><view slot="empty" class="empty-wrap">这份菜单还没有菜品，换个分类看看吧。</view></load-more>
 </view>
 <t-toast id="t-toast" />

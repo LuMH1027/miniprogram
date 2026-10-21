@@ -7,7 +7,7 @@
         <swipeout right-width="{{ 72 }}">
           <view class="goods-item-info">
             <view class="check-wrap" catchtap="selectGoods" data-goods="{{goods}}">
-              <t-icon size="40rpx" color="{{goods.selected ? '#FA4126' : '#BBBBBB'}}" name="{{goods.selected ? 'check-circle-filled' : 'circle'}}" class="check" />
+              <t-icon size="40rpx" color="{{goods.selected ? '#c94e76' : '#BBBBBB'}}" name="{{goods.selected ? 'check-circle-filled' : 'circle'}}" class="check" />
             </view>
             <view class="goods-sku-info">
               <goods-card layout="horizontal-wrap" thumb-width="{{thumbWidth}}" thumb-height="{{thumbHeight}}" centered="{{true}}" data="{{goods}}" data-goods="{{goods}}" catchspecs="specsTap" catchclick="goGoodsDetail">

@@ -16,7 +16,7 @@
 .order-sure .confirm-head-title {
   font-size: 32rpx;
   line-height: 44rpx;
-  color: #5a516d;
+  color: #30282d;
   font-weight: 600;
 }
 
@@ -24,7 +24,7 @@
   margin-top: 8rpx;
   font-size: 24rpx;
   line-height: 34rpx;
-  color: #9a90b0;
+  color: #776a72;
 }
 
 .order-sure .section-card {
@@ -37,7 +37,7 @@
 .order-sure .section-title {
   font-size: 28rpx;
   line-height: 40rpx;
-  color: #5f5578;
+  color: #30282d;
   font-weight: 600;
   padding: 20rpx 24rpx 6rpx;
 }
@@ -49,7 +49,7 @@
   right: 0;
   z-index: 10;
   background: #fff;
-  height: 112rpx;
+  height: calc(112rpx + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
   box-shadow: 0 -8rpx 24rpx rgba(255, 143, 177, 0.08);
 }
@@ -63,9 +63,9 @@
   align-items: center;
 }
 .order-sure .wx-pay-cover .wx-pay .price {
-  color: #ff8fb1;
+  color: #c94e76;
   font-weight: bold;
-  font-size: 63rpx;
+  font-size: 44rpx;
   line-height: 88rpx;
 }
 
@@ -73,7 +73,7 @@
   height: 80rpx;
   width: 240rpx;
   border-radius: 40rpx;
-  background: linear-gradient(90deg, #ff93b5 0%, #f7a4c5 100%);
+  background: #c94e76;
   color: #ffffff;
   line-height: 80rpx;
   font-weight: bold;
@@ -108,7 +108,7 @@
   justify-content: space-between;
   font-size: 24rpx;
   line-height: 32rpx;
-  color: #9a90b0;
+  color: #776a72;
   background-color: transparent;
 }
 .goods-wrapper .goods-image {
@@ -131,12 +131,12 @@
   font-size: 28rpx;
   line-height: 40rpx;
   margin-bottom: 12rpx;
-  color: #4f4566;
+  color: #30282d;
   margin-right: 16rpx;
 }
 
 .goods-wrapper .goods-content .goods-spec {
-  color: #9a90b0;
+  color: #776a72;
 }
 
 .goods-wrapper .goods-right {
@@ -147,7 +147,7 @@
 }
 
 .goods-right .goods-price {
-  color: #ff8fb1;
+  color: #c94e76;
   font-size: 32rpx;
   line-height: 48rpx;
   font-weight: bold;
@@ -173,7 +173,7 @@
 }
 
 .order-sure .remark-title {
-  color: #5f5578;
+  color: #30282d;
   font-size: 28rpx;
   line-height: 40rpx;
   font-weight: 500;
@@ -183,7 +183,7 @@
 .order-sure .remark-source {
   margin: -6rpx 0 12rpx;
   font-size: 22rpx;
-  color: #8f85a8;
+  color: #776a72;
 }
 
 .order-sure .remark-textarea {
@@ -199,10 +199,10 @@
   justify-content: space-between;
   font-size: 26rpx;
   line-height: 36rpx;
-  color: #8f85a8;
+  color: #776a72;
 }
 .order-sure .pay-detail .pay-item .pay-item__right {
-  color: #4f4566;
+  color: #30282d;
   font-size: 24rpx;
   display: flex;
   align-items: center;
@@ -283,7 +283,11 @@
 
 .order-sure .pay-amount .total-price {
   font-size: 36rpx;
-  color: #ff8fb1;
+  color: #c94e76;
   font-weight: bold;
   padding-left: 8rpx;
 }
+
+.order-sure .confirm-head-card { background: transparent; box-shadow: none; padding: 10rpx 4rpx 20rpx; }
+.order-sure .confirm-head-title { font-size: 38rpx; line-height: 56rpx; }
+.order-sure .section-card { box-shadow: none; border: 1rpx solid #f1e5ea; border-radius: 24rpx; }

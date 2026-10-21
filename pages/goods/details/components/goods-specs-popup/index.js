@@ -26,6 +26,12 @@ Component({
 
         const attrValues = collectAttrValueSet(skus);
         const attrList = initAttrList(attrValues);
+        if (skus.filter((sku) => sku.count > 0).length === 1) {
+          const available = skus.find((sku) => sku.count > 0);
+          attrList.forEach((attr) => attr.values.forEach((value) => {
+            if (available.attrValues.some((item) => item._id === value._id)) value.status = ATTR_VALUE_STATUS.PICKED;
+          }));
+        }
 
         this.calculateValue(attrList, skus);
 
@@ -33,6 +39,7 @@ Component({
           skus,
           attrList,
           spu,
+          value: 1,
         });
       },
     },
@@ -56,7 +63,7 @@ Component({
 
   observers: {
     'spu, pickedSku': function (spu, pickedSku) {
-      const imgSrc = pickedSku?.image ? pickedSku.image : spu.cover_image;
+      const imgSrc = pickedSku?.image ? pickedSku.image : spu?.cover_image || '';
       this.setData({
         imgSrc,
       });
@@ -68,16 +75,16 @@ Component({
         max = pickedSku.count;
         price = pickedSku.price;
       } else {
-        price = skus.reduce((acc, cur) => Math.min(acc, cur.price), Infinity);
+        price = skus.length ? skus.reduce((acc, cur) => Math.min(acc, cur.price), Infinity) : 0;
         max = 1;
       }
       this.setData({ price, max });
     },
     max: function (max) {
       const { value } = this.data;
-      if (value > max) {
+      if (value > max || (value < 1 && max > 0)) {
         this.setData({
-          value: max,
+          value: max > 0 ? Math.max(1, Math.min(value, max)) : 0,
         });
       }
     },
@@ -176,7 +183,7 @@ Component({
       const { skus } = this.data;
       const pickedSku = skus.find(
         (sku) =>
-          sku.attrValues.length === pickedAttrValues.length && // a and b have the same size
+          sku.count > 0 && sku.attrValues.length === pickedAttrValues.length && // a and b have the same size
           sku.attrValues.every((x) => pickedAttrValues.find((y) => y._id === x._id) != null), // every item in a can be found in b
       );
       if (pickedSku == null) {
@@ -204,35 +211,41 @@ Component({
     },
 
     addCart() {
-      const { pickedSku, max, value } = this.properties;
+      const { pickedSku, max, value } = this.data;
       if (pickedSku == null) {
         return;
       }
       if (value > max) {
         return;
       }
-      if (value < 1) {
+      if (!Number.isInteger(value) || value < 1) {
         return;
       }
       this.triggerEvent('addCart', { pickedSku, count: value });
     },
 
     buyNow() {
-      const { pickedSku, max, value } = this.properties;
+      const { pickedSku, max, value } = this.data;
       if (pickedSku == null) {
         return;
       }
       if (value > max) {
         return;
       }
-      if (value < 1) {
+      if (!Number.isInteger(value) || value < 1) {
         return;
       }
       this.triggerEvent('buyNow', { pickedSku, count: value });
     },
 
     handleBuyNumChange({ detail: { value } }) {
-      this.setData({ value });
+      const count = Number(value);
+      if (!Number.isInteger(count) || count < 1 || count > this.data.max) return;
+      this.setData({ value: count });
+    },
+
+    onBlur({ detail: { value } }) {
+      this.handleBuyNumChange({ detail: { value } });
     },
   },
   lifetimes: {},

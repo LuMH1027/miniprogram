@@ -133,7 +133,8 @@ Page({
   },
 
   buyItNow() {
-    this.gotoBuy({
+    if (this.data.skuArray.length !== 1) return this.showSkuSelectPopup(OUT_OPERATE_STATUS.BUY);
+    return this.gotoBuy({
       detail: {
         count: 1,
         pickedSku: this.getDefaultSku(),
@@ -154,7 +155,8 @@ Page({
   },
 
   toAddCart() {
-    this.addCart({
+    if (this.data.skuArray.length !== 1) return this.showSkuSelectPopup(OUT_OPERATE_STATUS.CART);
+    return this.addCart({
       detail: {
         count: 1,
         pickedSku: this.getDefaultSku(),
@@ -283,10 +285,14 @@ Page({
   },
 
   async addCart({ detail: { count, pickedSku } }) {
+    if (this._addingCart) return;
     if (!pickedSku) {
       this.toast('菜品信息还没准备好');
       return;
     }
+    count = Number(count);
+    if (!Number.isInteger(count) || count < 1) return this.toast('请输入有效的点单数量');
+    this._addingCart = true;
     const overCount = () => this.toast('超过可点数量了');
     const addCartSucceed = () => {
       cartShouldFresh();
@@ -295,25 +301,32 @@ Page({
     };
     const addCartFail = () => this.toast('加入点单车失败');
 
-    const records = await fetchCartItems();
+    try {
+      const records = await fetchCartItems();
 
-    const cartItem = records.find((x) => x.sku._id === pickedSku._id);
-    // eslint-disable-next-line eqeqeq
-    if (cartItem == null) {
-      // cart item empty, create
-      if (count <= pickedSku.count) {
-        await createCartItem({ skuId: pickedSku._id, count }).then(addCartSucceed, addCartFail);
+      const cartItem = records.find((x) => x.sku._id === pickedSku._id);
+      // eslint-disable-next-line eqeqeq
+      if (cartItem == null) {
+        // cart item empty, create
+        if (count <= pickedSku.count) {
+          await createCartItem({ skuId: pickedSku._id, count }).then(addCartSucceed, addCartFail);
+        } else {
+          overCount();
+        }
       } else {
-        overCount();
+        // cart item exists, update count
+        const finalCount = cartItem.count + count;
+        if (finalCount <= pickedSku.count) {
+          await updateCartItemCount({ cartItemId: cartItem._id, count: finalCount }).then(addCartSucceed, addCartFail);
+        } else {
+          overCount();
+        }
       }
-    } else {
-      // cart item exists, update count
-      const finalCount = cartItem.count + count;
-      if (finalCount <= pickedSku.count) {
-        await updateCartItemCount({ cartItemId: cartItem._id, count: finalCount }).then(addCartSucceed, addCartFail);
-      } else {
-        overCount();
-      }
+    } catch (error) {
+      console.error('[goods:add-cart:failed]', error);
+      addCartFail();
+    } finally {
+      this._addingCart = false;
     }
   },
 
@@ -323,12 +336,13 @@ Page({
 
   gotoBuy(e) {
     const overCount = () => this.toast('超过可点数量了');
-    const buyCount = e.detail.count;
+    const buyCount = Number(e.detail.count);
     const pickedSku = e.detail.pickedSku;
     if (!pickedSku) {
       this.toast('菜品信息还没准备好');
       return;
     }
+    if (!Number.isInteger(buyCount) || buyCount < 1) return this.toast('请输入有效的点单数量');
     const skuId = pickedSku._id;
     const skuCount = pickedSku.count;
     if (buyCount > skuCount) return overCount();
@@ -338,7 +352,7 @@ Page({
         type: 'direct',
         count: buyCount,
         skuId,
-        remark: this.data.selectedQuickRemark,
+        remark: encodeURIComponent(this.data.selectedQuickRemark),
         remarkSource: this.data.selectedQuickRemark ? 'detail-quick' : '',
       })}`,
     });
@@ -438,11 +452,13 @@ Page({
       skuArray: skus,
       specImg: skus[0]?.image || spu.cover_image,
       primaryImage: spu.cover_image,
-      isAllSelectedSku: true,
+      isAllSelectedSku: skus.length === 1,
+      isStock: skus.some((sku) => sku.count > 0),
+      soldout: !skus.some((sku) => sku.count > 0),
       selectedAttrStr: '',
       commentsStatistics: {
         commentCount,
-        goodRate: (goodCommentCount / commentCount) * 100,
+        goodRate: commentCount ? (goodCommentCount / commentCount) * 100 : 0,
       },
       spu,
       commentsList: records,

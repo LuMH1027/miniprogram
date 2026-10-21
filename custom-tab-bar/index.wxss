@@ -7,3 +7,6 @@
 .custom-tab-bar-wrapper .text {
   font-size: 20rpx;
 }
+
+.custom-tab-bar-wrapper { min-height: 96rpx; justify-content: center; gap: 4rpx; }
+.custom-tab-bar-wrapper .text { font-size: 22rpx; font-weight: 500; }

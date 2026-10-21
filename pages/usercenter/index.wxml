@@ -2,7 +2,7 @@
 <view class="content-wrapper">
   <view class="page-title-card">
     <view class="page-title">我们的点单小天地</view>
-    <view class="page-subtitle">保留最常用功能，简单又甜甜的</view>
+    <view class="page-subtitle">喜欢的口味，一起吃过的日常。</view>
   </view>
   <view class="order-group-wrapper">
     <t-order-group title="我们的订单" desc="查看全部" orderTagInfos="{{orderTagInfos}}" bind:onClickTop="jumpAllOrder" bind:onClickItem="jumpNav" />

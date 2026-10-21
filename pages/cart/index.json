@@ -6,6 +6,7 @@
     "cart-bar": "./components/cart-bar/index",
     "loading-dialog": "../../components/loading-dialog/index",
     "t-toast": "tdesign-miniprogram/toast/toast",
-    "t-dialog": "tdesign-miniprogram/dialog/dialog"
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "t-textarea": "tdesign-miniprogram/textarea/textarea"
   }
 }

@@ -81,19 +81,19 @@ Component({
     },
     changeStepper({
       detail: { value: changeToValue },
-      target: {
+      currentTarget: {
         dataset: { goods },
       },
     }) {
       // validation is handled by this.overlimit()
-      this.changeQuantity(changeToValue, goods._id);
+      this.changeQuantity(Number(changeToValue), goods._id);
     },
 
     input(e) {
       const { value } = e.detail;
       const { goods } = e.currentTarget.dataset;
-      const num = value;
-      this.changeQuantity(num, goods);
+      const num = Number(value);
+      this.changeQuantity(num, goods._id);
     },
 
     overlimit(e) {

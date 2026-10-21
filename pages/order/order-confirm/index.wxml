@@ -1,7 +1,7 @@
 <view class="order-sure" wx:if="{{!loading}}">
   <view class="confirm-head-card">
-    <view class="confirm-head-title">确认一下今天的甜甜点单</view>
-    <view class="confirm-head-subtitle">信息很简单：商品、备注、总价</view>
+    <view class="confirm-head-title">确认今天的点单</view>
+    <view class="confirm-head-subtitle">看看份数和口味，确认好了就提交吧。</view>
   </view>
 
   <address-card wx:if="{{false}}" addressData="{{userAddress}}" bind:addclick="onGotoAddress" bind:addressclick="onGotoAddress" />
@@ -44,7 +44,7 @@
 
   <view class="section-card amount-wrapper">
     <view class="pay-amount">
-      <text class="order-num">共{{goodsList.length}}份</text>
+      <text class="order-num">共{{totalGoodsCount}}份</text>
       <text>小计</text>
       <price class="total-price" price="{{totalSalePrice * 100}}" fill="{{false}}" decimalSmaller />
     </view>
@@ -52,7 +52,7 @@
   <view class="wx-pay-cover">
     <view class="wx-pay">
       <price decimalSmaller fill class="price" price="{{totalSalePrice * 100}}" />
-      <view class="submit-btn {{ !submitting ? '' : 'btn-gray'}}" bindtap="submitOrder">
+      <view class="submit-btn {{ !submitting && readyToSubmit ? '' : 'btn-gray'}}" bindtap="submitOrder">
         {{submitting ? '提交中' : '提交订单'}}
       </view>
     </view>

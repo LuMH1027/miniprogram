@@ -7,11 +7,11 @@ Component({
     },
     tip: {
       type: String,
-      value: '点单车是空的',
+      value: '还没选好？慢慢挑一份喜欢的。',
     },
     btnText: {
       type: String,
-      value: '去首页',
+      value: '去挑好吃的',
     },
   },
   data: {},

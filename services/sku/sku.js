@@ -1,9 +1,16 @@
 import { model, getAll } from '../_utils/model';
 import { DATA_MODEL_KEY } from '../../config/model';
 import { cloudbaseTemplateConfig } from '../../config/index';
-import { SKU, SPU, ATTR_VALUE } from '../cloudbaseMock/index';
+import { SKU, SPU } from '../cloudbaseMock/index';
+import { getAllAttrValues } from '../attrValue/attrValue';
 
 const SKU_MODEL_KEY = DATA_MODEL_KEY.SKU;
+
+function normalizeSku(sku) {
+  if (!sku) throw new Error('菜品规格不存在');
+  const count = Number(sku.count ?? sku.stock?.count ?? 0);
+  return { ...sku, count: Number.isInteger(count) && count >= 0 ? count : 0 };
+}
 
 /**
  *
@@ -11,16 +18,12 @@ const SKU_MODEL_KEY = DATA_MODEL_KEY.SKU;
  */
 export async function getSkuDetail(skuId) {
   if (cloudbaseTemplateConfig.useMock) {
-    const sku = SKU.find((x) => x._id === skuId);
-    sku.attr_value = ATTR_VALUE.filter((x) => {
-      if (Array.isArray(x.sku)) return x.sku.some((skuRef) => skuRef._id === skuId);
-      return sku?.attribute_value?.includes(x._id);
-    }).map((x) => ({
-      ...x,
-      value: x.value || x.attribute?.attr_value || '',
-    }));
-    sku.spu = SPU.find((spu) => spu._id === sku.spu._id);
-    return sku;
+    const sku = normalizeSku(SKU.find((x) => x._id === skuId));
+    return {
+      ...sku,
+      attr_value: await getAllAttrValues(skuId),
+      spu: SPU.find((spu) => spu._id === sku.spu._id),
+    };
   }
 
   const { data } = await model()[SKU_MODEL_KEY].get({
@@ -43,12 +46,16 @@ export async function getSkuDetail(skuId) {
       },
     },
   });
-  return data;
+  return normalizeSku(data);
 }
 
 export async function updateSku({ skuId, data }) {
+  if (!Number.isInteger(data.count) || data.count < 0) throw new Error('库存数量无效');
   if (cloudbaseTemplateConfig.useMock) {
-    SKU.find((x) => x._id === skuId).count = data.count;
+    const sku = SKU.find((x) => x._id === skuId);
+    if (!sku) throw new Error('菜品规格不存在');
+    sku.count = data.count;
+    if (sku.stock) sku.stock.count = data.count;
     return;
   }
 
@@ -65,9 +72,9 @@ export async function updateSku({ skuId, data }) {
 
 export async function getAllSku(spuId) {
   if (cloudbaseTemplateConfig.useMock) {
-    return SKU.filter((x) => x.spu._id === spuId);
+    return SKU.filter((x) => x.spu._id === spuId).map(normalizeSku);
   }
-  return getAll({
+  const skus = await getAll({
     name: SKU_MODEL_KEY,
     filter: {
       where: {
@@ -77,4 +84,5 @@ export async function getAllSku(spuId) {
       },
     },
   });
+  return skus.map(normalizeSku);
 }

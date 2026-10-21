@@ -1,26 +1,31 @@
-<view style="text-align: center; color: #b9b9b9" wx:if="{{pageLoading}}">
-  <t-loading theme="circular" size="40rpx" text="加载中..." inherit-color />
-</view>
 <view class="home-page-header">
   <view class="welcome-card">
-    <view class="welcome-title">今天想吃点什么呀？</view>
-    <view class="welcome-subtitle">和你一起，甜度刚刚好</view>
+    <view class="welcome-eyebrow">两个人的小食光</view>
+    <view class="welcome-title">今天，想吃点什么？</view>
+    <view class="welcome-subtitle">一杯喜欢的，一份想分享的。</view>
+    <button class="welcome-action" bindtap="navToCategories" hover-class="sweet-pressed">一起挑一挑 <t-icon name="chevron-right" size="28rpx" /></button>
   </view>
-  <view class="couple-banner">
-    <view class="banner-tag">今日甜甜推荐</view>
-    <view class="banner-text">给她点一杯暖暖的奶茶，或者来一块巴斯克</view>
+  <view class="search" bindtap="navToSearchPage">
+    <t-search placeholder="搜搜想吃的奶茶、甜品" disabled t-class-input="t-search__input" t-class-input-container="t-search__input-container" />
   </view>
-  <view class="search" bind:tap="navToSearchPage">
-    <t-search t-class-input="t-search__input" t-class-input-container="t-search__input-container" leftIcon="" disabled>
-      <t-icon slot="left-icon" prefix="wr" name="search" size="40rpx" color="#bbb" />
-    </t-search>
+  <view class="quick-categories">
+    <button wx:for="{{quickCategories}}" wx:key="key" class="quick-category" bindtap="navToCategory" data-key="{{item.key}}" hover-class="sweet-pressed">
+      <view class="quick-category__icon"><t-icon name="{{item.icon}}" size="42rpx" /></view>
+      <text>{{item.title}}</text>
+    </button>
   </view>
-  <view class="swiper-wrap">
-    <t-swiper wx:if="{{imgSrcs.length > 0}}" current="{{current}}" autoplay="{{autoplay}}" duration="{{duration}}" interval="{{interval}}" navigation="{{navigation}}" imageProps="{{swiperImageProps}}" list="{{imgSrcs}}" />
+  <view class="swiper-wrap" wx:if="{{imgSrcs.length}}">
+    <t-swiper current="{{current}}" autoplay="{{autoplay}}" duration="{{duration}}" interval="{{interval}}" navigation="{{navigation}}" imageProps="{{swiperImageProps}}" list="{{imgSrcs}}" />
   </view>
+  <view class="home-section-heading"><view class="home-section-title">慢慢挑，都是喜欢的</view><button class="section-link" bindtap="navToCategories">看分类 <t-icon name="chevron-right" size="24rpx" /></button></view>
 </view>
 <view class="home-page-container">
-  <goods-list wr-class="goods-list-container" goodsList="{{goodsList}}" bind:click="goodListClickHandle" bind:addcart="goodListAddCartHandle" />
-  <load-more list-is-empty="{{!goodsList.length}}" status="{{goodsListLoadStatus}}" bind:retry="onReTry" />
-  <t-toast id="t-toast" />
+  <view wx:if="{{!goodsList.length && goodsListLoadStatus === 1}}" class="goods-skeleton">
+    <view wx:for="{{[1, 2, 3, 4]}}" wx:key="*this" class="skeleton-card"><view class="skeleton-photo" /><view class="skeleton-line" /><view class="skeleton-line skeleton-line--short" /></view>
+  </view>
+  <goods-list wx:else wr-class="goods-list-container" goodsList="{{goodsList}}" bind:click="goodListClickHandle" bind:addcart="goodListAddCartHandle" />
+  <load-more wx:if="{{goodsList.length || goodsListLoadStatus !== 1}}" list-is-empty="{{!goodsList.length}}" status="{{goodsListLoadStatus}}" bind:retry="onReTry">
+    <view slot="empty" class="home-empty">还没有菜品，稍后再来看看吧。</view>
+  </load-more>
 </view>
+<t-toast id="t-toast" />

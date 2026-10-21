@@ -37,14 +37,15 @@
 }
 
 .cart-bar .cart-bar__total {
-  margin-left: 24rpx;
+  margin-left: 16rpx;
 }
 
 .cart-bar .account-btn {
-  width: 192rpx;
+  min-width: 200rpx;
+  padding: 0 16rpx;
   height: 80rpx;
   border-radius: 40rpx;
-  background-color: #ff8fb1;
+  background-color: #c94e76;
   font-size: 28rpx;
   font-weight: bold;
   line-height: 80rpx;
@@ -71,7 +72,7 @@
 }
 
 .cart-bar__total .cart-bar__total--price {
-  color: #ff8fb1;
+  color: #c94e76;
   font-weight: bold;
 }
 

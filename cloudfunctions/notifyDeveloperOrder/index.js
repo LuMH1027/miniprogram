@@ -3,7 +3,15 @@ const https = require('https');
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
-const FALLBACK_FEISHU_WEBHOOK_URL = 'https://open.feishu.cn/open-apis/bot/v2/hook/7837c823-ce56-4cc3-b57d-bea423c37fc3';
+// Deployment-local fallback; real webhook credentials stay out of Git.
+let fallbackUrls = [];
+try {
+  const localConfig = require('./webhooks.local.json');
+  if (Array.isArray(localConfig.urls)) fallbackUrls = localConfig.urls;
+} catch (error) {
+  if (error.code !== 'MODULE_NOT_FOUND') throw error;
+}
+const FALLBACK_FEISHU_WEBHOOK_URLS = fallbackUrls.join(',');
 
 function yuan(price = 0) {
   return (Number(price || 0) / 100).toFixed(2);
@@ -120,6 +128,7 @@ async function postJson(url, data) {
       console.error('[notifyDeveloperOrder:webhook:request:error]', error);
       reject(error);
     });
+    req.setTimeout(10000, () => req.destroy(new Error('Webhook request timed out')));
 
     req.write(body);
     req.end();
@@ -133,19 +142,17 @@ exports.main = async (event) => {
   const wxContext = cloud.getWXContext();
   console.log('[notifyDeveloperOrder:main:wx-context]', wxContext);
 
-  const webhookUrl = process.env.ORDER_NOTIFY_WEBHOOK_URL || FALLBACK_FEISHU_WEBHOOK_URL;
+  const configuredUrls = process.env.ORDER_NOTIFY_WEBHOOK_URLS || process.env.ORDER_NOTIFY_WEBHOOK_URL;
+  const webhookUrls = [...new Set((configuredUrls || FALLBACK_FEISHU_WEBHOOK_URLS)
+    .split(/[,\s]+/)
+    .map((url) => url.trim())
+    .filter(Boolean))];
   const webhookType = process.env.ORDER_NOTIFY_WEBHOOK_TYPE || 'feishu';
   console.log('[notifyDeveloperOrder:main:config]', {
-    hasEnvWebhookUrl: Boolean(process.env.ORDER_NOTIFY_WEBHOOK_URL),
-    hasFallbackWebhookUrl: Boolean(FALLBACK_FEISHU_WEBHOOK_URL),
+    hasEnvWebhookUrl: Boolean(configuredUrls),
+    hasFallbackWebhookUrl: Boolean(FALLBACK_FEISHU_WEBHOOK_URLS),
     webhookType,
-    webhookHost: (() => {
-      try {
-        return new URL(webhookUrl).host;
-      } catch (e) {
-        return 'invalid-url';
-      }
-    })(),
+    webhookCount: webhookUrls.length,
   });
 
   const text = buildOrderText({
@@ -156,26 +163,40 @@ exports.main = async (event) => {
     openid: wxContext.OPENID,
   });
 
-  if (!webhookUrl) {
+  if (!webhookUrls.length) {
     console.warn('[notifyDeveloperOrder:main:no-webhook-url]');
     return {
       sent: false,
-      reason: 'ORDER_NOTIFY_WEBHOOK_URL is not configured',
+      reason: 'No notification webhook URL is configured',
       text,
     };
   }
 
-  try {
-    const payload = buildWebhookPayload(text, webhookType);
-    const result = await postJson(webhookUrl, payload);
-    console.log('[notifyDeveloperOrder:main:success]', result);
-    return { sent: true, result };
-  } catch (error) {
-    console.error('[notifyDeveloperOrder:main:failed]', error);
-    return {
-      sent: false,
-      errorMessage: error?.message || String(error),
-      text,
-    };
-  }
+  const payload = buildWebhookPayload(text, webhookType);
+  const results = await Promise.all(webhookUrls.map(async (url, index) => {
+    try {
+      const result = await postJson(url, payload);
+      if (webhookType === 'feishu') {
+        const response = JSON.parse(result);
+        const code = response.code ?? response.StatusCode;
+        if (code === undefined || Number(code) !== 0) {
+          throw new Error(`Feishu webhook failed: ${result}`);
+        }
+      }
+      return { index, sent: true, result };
+    } catch (error) {
+      // Only return the index: webhook URLs contain credentials.
+      const errorMessage = (error?.message || String(error)).split(url).join('[webhook]');
+      console.error('[notifyDeveloperOrder:main:failed]', { index, errorMessage });
+      return { index, sent: false, errorMessage };
+    }
+  }));
+  const sentCount = results.filter((result) => result.sent).length;
+  return {
+    sent: sentCount === webhookUrls.length,
+    partial: sentCount > 0 && sentCount < webhookUrls.length,
+    sentCount,
+    failedCount: webhookUrls.length - sentCount,
+    results,
+  };
 };

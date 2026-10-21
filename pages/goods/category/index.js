@@ -2,10 +2,10 @@ import Toast from 'tdesign-miniprogram/toast/index';
 import { getCates } from '../../../services/cate/cate';
 
 const FIXED_CATEGORY_CONFIG = [
-  { key: 'all', title: '全部', keywords: [] },
-  { key: 'milkTea', title: '奶茶', keywords: ['奶茶'] },
-  { key: 'dessert', title: '甜品', keywords: ['甜品'] },
-  { key: 'meal', title: '饭饭', keywords: ['饭饭'] },
+  { key: 'all', title: '全部菜品', hint: '今天的喜欢，都在这里', icon: 'app', keywords: [] },
+  { key: 'milkTea', title: '喝杯奶茶', hint: '给日常加一点甜', icon: 'shop', keywords: ['奶茶'] },
+  { key: 'dessert', title: '来点甜品', hint: '留一点胃口给快乐', icon: 'heart', keywords: ['甜品'] },
+  { key: 'meal', title: '好好吃饭', hint: '再忙也要按时吃饭', icon: 'time', keywords: ['饭饭'] },
 ];
 
 function matchCateByKeywords(cates, keywords = [], usedIds = new Set()) {
@@ -20,8 +20,11 @@ function matchCateByKeywords(cates, keywords = [], usedIds = new Set()) {
 Page({
   data: {
     fixedCategories: [],
+    loading: true,
+    loadFailed: false,
   },
   async init() {
+    this.setData({ loading: true, loadFailed: false });
     try {
       const cates = await getCates();
       const childCates = cates.flatMap((x) => x.child_cate || []);
@@ -41,6 +44,7 @@ Page({
       this.setData({ fixedCategories });
     } catch (e) {
       console.error('获取菜品分类列表失败', e);
+      this.setData({ loadFailed: true });
       Toast({
         context: this,
         selector: '#t-toast',
@@ -48,7 +52,13 @@ Page({
         duration: 1000,
         icon: '',
       });
+    } finally {
+      this.setData({ loading: false });
     }
+  },
+
+  openCategory(category) {
+    wx.navigateTo({ url: `/pages/goods/list/index?cateIds=${encodeURIComponent(category.cateId)}&title=${encodeURIComponent(category.title)}` });
   },
 
   onShow() {
@@ -56,10 +66,8 @@ Page({
   },
 
   onCategoryTap(e) {
-    const cateId = e?.currentTarget?.dataset?.cateId || 'all';
-    wx.navigateTo({
-      url: `/pages/goods/list/index?cateIds=${cateId}`,
-    });
+    const category = this.data.fixedCategories.find((item) => item.key === e.currentTarget.dataset.key);
+    if (category) this.openCategory(category);
   },
 
   onLoad() {

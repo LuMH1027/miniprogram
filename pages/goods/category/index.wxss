@@ -1,66 +1,16 @@
-.tabbar-position {
-  position: fixed !important;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-}
-
-.wrap {
-  min-height: 100vh;
-  background: #fff8fb;
-  padding: 28rpx 24rpx calc(env(safe-area-inset-bottom) + 24rpx);
-}
-
-.category-header {
-  background: #fff;
-  border-radius: 24rpx;
-  padding: 24rpx;
-  box-shadow: 0 8rpx 20rpx rgba(255, 143, 177, 0.12);
-}
-
-.category-title {
-  font-size: 34rpx;
-  font-weight: 600;
-  color: #5a516d;
-}
-
-.category-subtitle {
-  margin-top: 8rpx;
-  font-size: 24rpx;
-  color: #9c92b2;
-}
-
-.category-list {
-  margin-top: 20rpx;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 16rpx;
-  row-gap: 16rpx;
-}
-
-.category-item {
-  border-radius: 24rpx;
-  background: linear-gradient(135deg, #ffdbe9 0%, #efe5ff 100%);
-  padding: 22rpx 20rpx;
-  min-height: 146rpx;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.category-item__name {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #5f5578;
-}
-
-.category-item__hint {
-  margin-top: 8rpx;
-  font-size: 22rpx;
-  color: #8a7a9b;
-}
-
-page {
-  min-height: 100%;
-  padding-bottom: 0;
-}
+page { min-height: 100%; }
+.wrap { padding: 36rpx 28rpx calc(env(safe-area-inset-bottom) + 140rpx); }
+.category-header { padding: 8rpx 4rpx 36rpx; }
+.category-eyebrow { font-size: 23rpx; color: #a05570; letter-spacing: 3rpx; margin-bottom: 16rpx; }
+.category-title { font-size: 40rpx; font-weight: 700; color: #30282d; line-height: 1.45; }
+.category-subtitle { margin-top: 12rpx; font-size: 26rpx; color: #776a72; line-height: 40rpx; }
+.category-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20rpx; }
+.category-item { height: auto; min-height: 256rpx; background: #fff; border: 1rpx solid #f1e5ea; border-radius: 28rpx; padding: 28rpx; text-align: left; }
+.category-item--all { background: #fce6ee; border-color: #fce6ee; }
+.category-item__top { display: flex; align-items: center; justify-content: space-between; color: #b24468; margin-bottom: 32rpx; }
+.category-item__name { font-size: 32rpx; font-weight: 600; color: #30282d; line-height: 44rpx; }
+.category-item__hint { margin-top: 8rpx; font-size: 23rpx; color: #776a72; line-height: 34rpx; }
+.category-footer { margin-top: 40rpx; text-align: center; font-size: 24rpx; color: #87717c; }
+.category-state { padding: 100rpx 24rpx; color: #776a72; text-align: center; }
+.category-retry { margin: 24rpx auto; height: 80rpx; width: 240rpx; border-radius: 40rpx; background: #c94e76; color: #fff; line-height: 80rpx; }
+.category-pressed { opacity: .75; }

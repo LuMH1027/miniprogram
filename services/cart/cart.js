@@ -2,7 +2,8 @@ import { model, getAll } from '../../services/_utils/model';
 import { config } from '../../config/index';
 import { DATA_MODEL_KEY } from '../../config/model';
 import { cloudbaseTemplateConfig } from '../../config/index';
-import { CART_ITEM, SKU, createId } from '../cloudbaseMock/index';
+import { CART_ITEM, createId } from '../cloudbaseMock/index';
+import { getSkuDetail } from '../sku/sku';
 
 const CATE_ITEM_MODEL_KEY = DATA_MODEL_KEY.CART_ITEM;
 
@@ -22,8 +23,8 @@ function mockFetchCartGroupData(params) {
 export async function getCartItem({ id }) {
   if (cloudbaseTemplateConfig.useMock) {
     const cartItem = CART_ITEM.find((x) => x._id === id);
-    cartItem.sku = SKU.find((sku) => sku._id === cartItem.sku._id);
-    return { data: cartItem };
+    if (!cartItem) throw new Error('点单车中已没有这份菜品');
+    return { data: { ...cartItem, sku: await getSkuDetail(cartItem.sku._id) } };
   }
 
   return model()[CATE_ITEM_MODEL_KEY].get({
@@ -48,13 +49,13 @@ export async function getCartItem({ id }) {
 
 export async function fetchCartItems() {
   if (cloudbaseTemplateConfig.useMock) {
-    return CART_ITEM.map((cartItem) => {
-      const sku = SKU.find((x) => x._id === cartItem.sku._id);
+    return Promise.all(CART_ITEM.map(async (cartItem) => {
+      const sku = await getSkuDetail(cartItem.sku._id);
       return {
         ...cartItem,
         sku,
       };
-    });
+    }));
   }
 
   return getAll({
@@ -79,7 +80,10 @@ export async function fetchCartItems() {
  * }} param0
  */
 export async function createCartItem({ skuId, count }) {
+  if (!Number.isInteger(count) || count < 1) throw new Error('点单数量无效');
   if (cloudbaseTemplateConfig.useMock) {
+    const sku = await getSkuDetail(skuId);
+    if (count > sku.count) throw new Error('超过可点数量了');
     CART_ITEM.push({ sku: { _id: skuId }, count, _id: createId() });
     return;
   }
@@ -97,10 +101,8 @@ export async function createCartItem({ skuId, count }) {
  */
 export async function deleteCartItem({ cartItemId }) {
   if (cloudbaseTemplateConfig.useMock) {
-    CART_ITEM.splice(
-      CART_ITEM.findIndex((cartItem) => cartItem._id === cartItemId),
-      1,
-    );
+    const index = CART_ITEM.findIndex((cartItem) => cartItem._id === cartItemId);
+    if (index !== -1) CART_ITEM.splice(index, 1);
     return;
   }
   return await model()[CATE_ITEM_MODEL_KEY].delete({
@@ -123,8 +125,13 @@ export async function deleteCartItem({ cartItemId }) {
  * @returns
  */
 export async function updateCartItemCount({ cartItemId, count }) {
+  if (!Number.isInteger(count) || count < 1) throw new Error('点单数量无效');
   if (cloudbaseTemplateConfig.useMock) {
-    CART_ITEM.find((x) => x._id === cartItemId).count = count;
+    const item = CART_ITEM.find((x) => x._id === cartItemId);
+    if (!item) throw new Error('点单车中已没有这份菜品');
+    const sku = await getSkuDetail(item.sku._id);
+    if (count > sku.count) throw new Error('超过可点数量了');
+    item.count = count;
     return;
   }
   return await model()[CATE_ITEM_MODEL_KEY].update({

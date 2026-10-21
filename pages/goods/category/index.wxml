@@ -1,20 +1,13 @@
 <view class="wrap">
-  <view class="category-header">
-    <view class="category-title">今天想吃点什么呀</view>
-    <view class="category-subtitle">选一个分类，马上开始点单</view>
+  <view class="category-header"><view class="category-eyebrow">今天的菜单</view><view class="category-title">从喜欢的那一口开始</view><view class="category-subtitle">奶茶、甜品，还是一顿好好吃的饭？</view></view>
+  <view wx:if="{{loading}}" class="category-state">正在准备菜单…</view>
+  <view wx:elif="{{loadFailed}}" class="category-state"><view>菜单暂时没加载出来</view><button class="category-retry" bindtap="init">再试一次</button></view>
+  <view wx:else class="category-list">
+    <button wx:for="{{fixedCategories}}" wx:key="key" class="category-item category-item--{{item.key}}" bindtap="onCategoryTap" data-key="{{item.key}}" hover-class="category-pressed">
+      <view class="category-item__top"><t-icon name="{{item.icon}}" size="54rpx" /><t-icon name="chevron-right" size="28rpx" /></view>
+      <view class="category-item__name">{{item.title}}</view><view class="category-item__hint">{{item.hint}}</view>
+    </button>
   </view>
-
-  <view class="category-list">
-    <view
-      wx:for="{{fixedCategories}}"
-      wx:key="key"
-      class="category-item"
-      bindtap="onCategoryTap"
-      data-cate-id="{{item.cateId}}"
-    >
-      <view class="category-item__name">{{item.title}}</view>
-      <view class="category-item__hint">甜甜地安排一下</view>
-    </view>
-  </view>
+  <view class="category-footer">慢慢选，喜欢的就放进点单车。</view>
   <t-toast id="t-toast" />
 </view>

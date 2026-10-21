@@ -1,7 +1,2 @@
-.goods-list-wrap {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-  padding: 0;
-  background: #fff;
-}
+.goods-list-wrap { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20rpx; padding: 0; background: transparent; }
+.goods-card-inside { min-width: 0; }

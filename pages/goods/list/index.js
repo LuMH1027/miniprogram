@@ -1,11 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { getPrice } from '../../../services/good/spu';
 import { getAllSpuOfCate, getCates } from '../../../services/cate/cate';
-import { fetchCartItems, createCartItem, updateCartItemCount } from '../../../services/cart/cart';
-import { getAllSku } from '../../../services/sku/sku';
 import { getCloudImageTempUrl } from '../../../utils/cloudImageHandler';
 import { LIST_LOADING_STATUS } from '../../../utils/listLoading';
-import { cartShouldFresh } from '../../../utils/cartFresh';
 import Toast from 'tdesign-miniprogram/toast/index';
 
 const initFilters = {
@@ -82,6 +79,7 @@ Page({
   },
 
   async loadGoodsList() {
+    if (this.data.goodsListLoadStatus === LIST_LOADING_STATUS.LOADING) return;
     this.setData({ goodsListLoadStatus: LIST_LOADING_STATUS.LOADING });
 
     try {
@@ -124,12 +122,13 @@ Page({
 
       this.setData({
         goodsList,
+        hasLoaded: true,
         // TODO: add pagination
         goodsListLoadStatus: LIST_LOADING_STATUS.NO_MORE,
       });
     } catch (err) {
       console.error('error', err);
-      this.setData({ goodsListLoadStatus: LIST_LOADING_STATUS.FAILED });
+      this.setData({ goodsListLoadStatus: LIST_LOADING_STATUS.FAILED, hasLoaded: true });
     }
   },
   cateId: null,
@@ -137,7 +136,15 @@ Page({
   cateMode: 'single',
 
   onLoad(query) {
-    const { cateId, cateIds } = query || {};
+    const { cateId, cateIds, title } = query || {};
+    let categoryTitle = title || '全部菜品';
+    try {
+      categoryTitle = decodeURIComponent(categoryTitle);
+    } catch (error) {
+      console.warn('[goods-list:invalid-title]', error);
+    }
+    this.setData({ categoryTitle });
+    wx.setNavigationBarTitle({ title: categoryTitle });
     if (typeof cateIds === 'string') {
       if (cateIds === 'all') {
         this.cateMode = 'all';
@@ -158,50 +165,14 @@ Page({
     this.init(true);
   },
 
-  onReachBottom() {
-    const { goodsList } = this.data;
-    const { total = 0 } = this;
-    if (goodsList.length === total) {
-      this.setData({
-        loadMoreStatus: 2,
-      });
-      return;
-    }
-    this.init(false);
+  onReachBottom() {},
+
+  onReTry() {
+    this.loadGoodsList();
   },
 
-  async handleAddCart(e) {
-    const spuId = e?.detail?.goods?._id;
-    if (!spuId) return;
-
-    try {
-      const [pickedSku] = await getAllSku(spuId);
-      if (!pickedSku) {
-        throw new Error('sku empty');
-      }
-      const records = await fetchCartItems();
-      const cartItem = records.find((x) => x.sku._id === pickedSku._id);
-      if (cartItem) {
-        await updateCartItemCount({ cartItemId: cartItem._id, count: cartItem.count + 1 });
-      } else {
-        await createCartItem({ skuId: pickedSku._id, count: 1 });
-      }
-      cartShouldFresh();
-      Toast({
-        context: this,
-        selector: '#t-toast',
-        message: '已加入点单车',
-        icon: '',
-      });
-    } catch (err) {
-      console.error(err);
-      Toast({
-        context: this,
-        selector: '#t-toast',
-        message: '加入点单车失败',
-        icon: '',
-      });
-    }
+  handleAddCart(e) {
+    this.gotoGoodsDetail(e);
   },
 
   tagClickHandle() {

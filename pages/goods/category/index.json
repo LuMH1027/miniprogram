@@ -2,6 +2,7 @@
   "navigationBarTitleText": "分类",
   "usingComponents": {
     "goods-category": "./components/goods-category/index",
-    "t-toast": "tdesign-miniprogram/toast/toast"
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-icon": "tdesign-miniprogram/icon/icon"
   }
 }

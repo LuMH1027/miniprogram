@@ -152,6 +152,7 @@ export async function listOrder({ pageSize, pageNumber, status }) {
 
 async function getOrderCountOfStatus(status) {
   if (cloudbaseTemplateConfig.useMock) {
+    hydrateMockOrders();
     return ORDER.filter((x) => x.status === status).length;
   }
 
@@ -188,8 +189,11 @@ export async function getOrder(orderId) {
   if (cloudbaseTemplateConfig.useMock) {
     hydrateMockOrders();
     const order = ORDER.find(o => o._id === orderId);
-    order.delivery_info = DELIVERY_INFO.find(i => i._id === order.delivery_info._id)
-    return order
+    if (!order) throw new Error('订单不存在');
+    return {
+      ...order,
+      delivery_info: DELIVERY_INFO.find(i => i._id === order.delivery_info?._id) || null,
+    };
   }
   return (
     await model()[ORDER_MODEL_KEY].get({

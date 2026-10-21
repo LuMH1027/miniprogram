@@ -4,7 +4,6 @@ import { getSkuDetail } from '../../services/sku/sku';
 import { objectToParamString } from '../../utils/util';
 import { getSingleCloudImageTempUrl } from '../../utils/cloudImageHandler';
 
-let updateCartItemCountTimeout = null;
 const REMARK_MAX_LENGTH = 120;
 
 function sanitizeRemark(value = '') {
@@ -31,9 +30,9 @@ Component({
   observers: {
     cartItems: function (cartItems) {
       const selectedCartItems = cartItems.filter((x) => x.selected === true);
-      const selectedCartItemNum = selectedCartItems.length;
+      const selectedCartItemNum = selectedCartItems.reduce((sum, item) => sum + item.count, 0);
       const totalAmount = selectedCartItems.reduce((acc, cur) => acc + cur.count * cur.sku.price, 0);
-      const allSelected = selectedCartItemNum === cartItems.length;
+      const allSelected = cartItems.length > 0 && selectedCartItems.length === cartItems.length;
 
       this.setData({
         selectedCartItemNum,
@@ -74,9 +73,12 @@ Component({
 
   methods: {
     async init() {
+      if (this._cartSave) await this._cartSave;
+      this._quantityErrors = new Set();
+      const previousSelection = new Map(this.data.cartItems.map((item) => [item._id, item.selected]));
       const cartItems = (await fetchCartItems()).map((x) =>
         Object.assign(x, {
-          selected: true,
+          selected: previousSelection.has(x._id) ? previousSelection.get(x._id) : true,
         }),
       );
       await Promise.all(
@@ -202,10 +204,16 @@ Component({
     },
 
     onQuantityChange({ detail: { cartItemId, count } }) {
+      if (this.data.loading) return;
       const { cartItems } = this.data;
       const item = cartItems.find((x) => x._id === cartItemId);
       if (item == null) {
         console.warn('Cart item not found');
+        return;
+      }
+      count = Number(count);
+      if (!Number.isInteger(count) || count < 1 || count > item.sku.count) {
+        wx.showToast({ title: '请输入可点范围内的整数数量', icon: 'none' });
         return;
       }
       item.count = count;
@@ -214,15 +222,19 @@ Component({
     },
 
     debouncedUpdateCartItemCount({ cartItemId, count }) {
-      clearTimeout(updateCartItemCountTimeout);
-      updateCartItemCountTimeout = setTimeout(async () => {
-        this.setLoading();
+      // Serialize writes so changes to different items and rapid taps are all saved.
+      this._quantityErrors = this._quantityErrors || new Set();
+      this._cartSave = (this._cartSave || Promise.resolve()).then(async () => {
         try {
           await updateCartItemCount({ cartItemId, count });
-        } finally {
-          this.unsetLoading();
+          this._quantityErrors.delete(cartItemId);
+        } catch (error) {
+          console.error('[cart:save-quantity:failed]', error);
+          this._quantityErrors.add(cartItemId);
+          wx.showToast({ title: '数量保存失败，请重新调整后再试', icon: 'none' });
         }
-      }, 500);
+      });
+      return this._cartSave;
     },
 
     goCollect() {
@@ -258,7 +270,9 @@ Component({
         });
         this.setLoading();
         try {
+          if (this._cartSave) await this._cartSave;
           await deleteCartItem({ cartItemId: _id });
+          this._quantityErrors?.delete(_id);
           const { cartItems } = this.data;
           this.setData({
             cartItems: cartItems.filter((x) => x._id !== _id),
@@ -277,24 +291,36 @@ Component({
       this.setData({ cartItems });
     },
 
-    onToSettle() {
+    async onToSettle() {
+      if (this.data.loading) return;
       const selectedCartIds = this.data.cartItems
+        .filter((item) => item.selected)
         .map((x) => x._id);
       if (!selectedCartIds.length) {
         wx.showToast({
-          title: '点单车还是空的',
+          title: '先勾选想点的菜品',
           icon: 'none',
         });
         return;
       }
 
-      wx.navigateTo({
-        url: `/pages/order/order-confirm/index?${objectToParamString({
-          type: 'cart',
-          cartIds: selectedCartIds.join(','),
-          remark: sanitizeRemark(this.data.remark),
-        })}`,
-      });
+      await this.setLoading();
+      try {
+        if (this._cartSave) await this._cartSave;
+        if (this._quantityErrors?.size) {
+          wx.showToast({ title: '数量未保存成功，请重新调整后再试', icon: 'none' });
+          return;
+        }
+        wx.navigateTo({
+          url: `/pages/order/order-confirm/index?${objectToParamString({
+            type: 'cart',
+            cartIds: selectedCartIds.join(','),
+            remark: encodeURIComponent(sanitizeRemark(this.data.remark)),
+          })}`,
+        });
+      } finally {
+        await this.unsetLoading();
+      }
     },
 
     onRemarkChange(e) {

@@ -2,12 +2,14 @@ export async function getCloudImageTempUrl(images) {
   const handledIndexToOriginIndex = new Map();
   const shouldBeHandledImages = [];
   images.forEach((x, index) => {
-    if (!x.startsWith('cloud')) return;
+    if (typeof x !== 'string' || !x.startsWith('cloud://')) return;
 
     const handleIndex = shouldBeHandledImages.length;
     shouldBeHandledImages.push(x);
     handledIndexToOriginIndex.set(handleIndex, index);
   });
+
+  if (!shouldBeHandledImages.length) return [...images];
 
   const handledImages = (
     await wx.cloud.getTempFileURL({
@@ -22,7 +24,7 @@ export async function getCloudImageTempUrl(images) {
 }
 
 export async function getSingleCloudImageTempUrl(image) {
-  if (!image.startsWith('cloud')) return image;
+  if (typeof image !== 'string' || !image.startsWith('cloud://')) return image || '';
   return (
     await wx.cloud.getTempFileURL({
       fileList: [image],

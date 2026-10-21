@@ -23,7 +23,7 @@ page {
 }
 
 .goods-detail-page .goods-info .goods-price-up {
-  color: #ff8fb1;
+  color: #c94e76;
   font-size: 28rpx;
   position: relative;
   bottom: 4rpx;
@@ -32,14 +32,14 @@ page {
 
 .goods-detail-page .goods-info .goods-price .class-goods-price {
   font-size: 64rpx;
-  color: #ff8fb1;
+  color: #c94e76;
   font-weight: bold;
   font-family: DIN Alternate;
 }
 
 .goods-detail-page .goods-info .goods-price .class-goods-symbol {
   font-size: 36rpx;
-  color: #ff8fb1;
+  color: #c94e76;
 }
 
 .goods-detail-page .goods-info .goods-price .class-goods-del {
@@ -221,9 +221,9 @@ page {
 }
 
 .quick-remark__item--active {
-  background: #ff8fb1;
+  background: #c94e76;
   color: #fff;
-  border-color: #ff8fb1;
+  border-color: #c94e76;
 }
 
 .quick-remark__tip {

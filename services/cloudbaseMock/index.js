@@ -1,5 +1,7 @@
 export const USER_ID = 'USER_MOCK';
 
+export const HOME_SWIPER = [];
+
 export function createId() {
   return Array.from({ length: 16 })
     .map(() => Math.floor(Math.random() * 16).toString(16))

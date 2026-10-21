@@ -7,7 +7,7 @@
  * @FilePath: /retail-mp/style/global.wxss
  */
 .text-primary {
-  color: #ff8fb1;
+  color: #c94e76;
 }
 .text-success {
   color: #5fb446;
@@ -37,7 +37,7 @@
   color: #fff;
 }
 .bg-primary {
-  background-color: #ff8fb1;
+  background-color: #c94e76;
   color: #fff;
 }
 .bg-success {
@@ -73,7 +73,7 @@
   color: #5d5d5d;
 }
 .bd-primary {
-  color: #ff8fb1;
+  color: #c94e76;
 }
 .bd-success {
   color: #5fb446;
@@ -165,7 +165,8 @@ page {
   height: 100%;
   font-family: 'Microsoft YaHei', '微软雅黑', 'MicrosoftJhengHei', '华文细黑', Helvetica, Arial, 'sans-serif';
   font-size: 26rpx;
-  background-color: #fff8fb;
+  background-color: #fff8fa;
+  color: #30282d;
   font-weight: 400;
 }
 view,
@@ -218,7 +219,7 @@ textarea {
   z-index: 0;
 }
 .price {
-  color: #ff8fb1;
+  color: #c94e76;
   font-size: 32rpx;
   font-weight: 600;
 }
@@ -231,14 +232,14 @@ textarea {
   background: #fff;
 }
 .color-price {
-  color: #ff8fb1;
+  color: #c94e76;
 }
 .bg-cart {
   background-color: #ffb86c;
   color: #fff;
 }
 .market-addcart {
-  color: #ff8fb1;
+  color: #c94e76;
   font-size: 42rpx;
 }
 

@@ -1,107 +1,27 @@
-:host {
-  background-color: #fff8fb;
-}
-
-.record-header {
-  margin: 20rpx 24rpx 12rpx;
-  padding: 22rpx 24rpx;
-  border-radius: 20rpx;
-  background: #fff;
-  box-shadow: 0 8rpx 20rpx rgba(255, 143, 177, 0.12);
-}
-
-.record-title {
-  font-size: 32rpx;
-  color: #5a516d;
-  font-weight: 600;
-}
-
-.record-subtitle {
-  margin-top: 8rpx;
-  color: #9a90b0;
-  font-size: 24rpx;
-}
-
-.order-record-card {
-  margin: 16rpx 24rpx 0;
-  border-radius: 20rpx;
-  background: #fff;
-  padding: 20rpx 24rpx;
-  box-shadow: 0 8rpx 20rpx rgba(255, 143, 177, 0.1);
-}
-
-.record-row {
-  display: flex;
-  align-items: flex-start;
-  margin-top: 8rpx;
-}
-
-.record-row:first-child {
-  margin-top: 0;
-}
-
-.record-label {
-  width: 92rpx;
-  flex-shrink: 0;
-  color: #8f85a8;
-  font-size: 24rpx;
-}
-
-.record-value {
-  color: #4f4566;
-  font-size: 26rpx;
-  line-height: 36rpx;
-  word-break: break-word;
-}
-
-.record-value--ellipsis {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
-
-.record-price {
-  color: #ff8fb1;
-  font-size: 34rpx;
-  line-height: 42rpx;
-  font-weight: 700;
-}
-
-.record-row--remark {
-  border-top: 1rpx dashed #f1dbe6;
-  margin-top: 14rpx;
-  padding-top: 14rpx;
-}
-
-.list-loading {
-  height: 100rpx;
-}
-.empty-wrapper {
-  height: calc(100vh - 180rpx);
-}
-.load-more {
-  margin: 0;
-}
-
-.t-empty-text {
-  font-size: 28rpx;
-  color: #999;
-}
-
-.t-class-indicator {
-  color: #b9b9b9 !important;
-}
-
-.t-button {
-  --td-button-default-color: #000;
-  --td-button-primary-text-color: #ff8fb1;
-}
-
-.order-card-loading-container {
-  text-align: center;
-}
-
-.t-loading__spinner--circular .t-loading__circular {
-  color: #b9b9b9 !important;
-}
+page { background: #fff8fa; padding-bottom: calc(env(safe-area-inset-bottom) + 132rpx); }
+.record-header { padding: 36rpx 32rpx 28rpx; }
+.record-eyebrow { color: #a05570; font-size: 23rpx; letter-spacing: 3rpx; margin-bottom: 14rpx; }
+.record-heading { display: flex; align-items: center; justify-content: space-between; gap: 12rpx; }
+.record-title { font-size: 40rpx; color: #30282d; font-weight: 700; line-height: 1.45; }
+.record-count { padding: 8rpx 18rpx; background: #f9e4ec; border-radius: 24rpx; color: #a94365; font-size: 24rpx; flex-shrink: 0; }
+.record-subtitle { margin-top: 12rpx; color: #776a72; font-size: 26rpx; line-height: 40rpx; }
+.order-record-card { margin: 0 28rpx 20rpx; border-radius: 24rpx; background: #fff; border: 1rpx solid #f1e5ea; padding: 24rpx; }
+.record-top, .record-bottom { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; }
+.record-top { padding-bottom: 20rpx; border-bottom: 1rpx solid #f4eaf0; }
+.record-date { font-size: 24rpx; color: #776a72; }
+.record-detail { font-size: 23rpx; color: #a64c6b; flex-shrink: 0; }
+.record-content { display: flex; align-items: center; margin: 24rpx 0; gap: 20rpx; }
+.record-photos { display: flex; flex-shrink: 0; gap: 8rpx; max-width: 284rpx; }
+.record-photo { width: 88rpx; height: 96rpx; border-radius: 14rpx; background: #f7edf1; }
+.record-description { flex: 1; min-width: 0; }
+.record-name { font-size: 28rpx; color: #30282d; font-weight: 600; line-height: 40rpx; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.record-quantity { margin-top: 8rpx; font-size: 23rpx; color: #776a72; }
+.record-remark { padding: 14rpx 18rpx; background: #fcf6f8; border-radius: 12rpx; font-size: 24rpx; line-height: 36rpx; color: #776a72; word-break: break-all; margin-bottom: 20rpx; }
+.record-bottom { border-top: 1rpx solid #f4eaf0; padding-top: 20rpx; }
+.record-total-label { color: #776a72; font-size: 24rpx; }
+.record-price { color: #b83f67; font-size: 36rpx; font-weight: 700; }
+.empty-wrapper { text-align: center; padding: 110rpx 32rpx; }
+.empty-title { color: #30282d; font-size: 34rpx; font-weight: 600; }
+.empty-subtitle { margin-top: 18rpx; color: #776a72; font-size: 25rpx; line-height: 40rpx; }
+.empty-action { width: 280rpx; height: 84rpx; line-height: 84rpx; margin: 32rpx auto 0; background: #c94e76; color: #fff; border-radius: 42rpx; font-size: 28rpx; }
+.record-pressed { opacity: .8; }

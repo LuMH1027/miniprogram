@@ -1,4 +1,4 @@
-<cloud-template-guide />
+<view class="cart-heading"><view class="cart-eyebrow">先把喜欢的放在一起</view><view class="cart-title">我们的点单车</view><view class="cart-subtitle">勾选想吃的，再写下你的小偏好。</view></view>
 <!-- 点单车 -->
 <block wx:if="{{cartItems.length !== 0}}">
   <cart-group cartItems="{{cartItems}}" bindselectgoods="onGoodsSelect" bindselectstore="onStoreSelect" bindchangequantity="onQuantityChange" bindgocollect="goCollect" bindgoodsclick="goGoodsDetail" bindclearinvalidgoods="clearInvalidGoods" binddelete="onGoodsDelete" />

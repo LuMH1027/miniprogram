@@ -14,11 +14,11 @@ export async function notifyDeveloperOrder({ orderId, goodsList = [], remark = '
   const payload = {
     orderId,
     remark,
-    totalPrice,
+    totalPrice: Math.round(Number(totalPrice) * 100),
     goodsList: goodsList.map((item) => ({
       title: item.title,
       num: item.num,
-      price: item.price,
+      price: Math.round(Number(item.price) * 100),
       specs: item.specs,
     })),
   };
