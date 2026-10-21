@@ -2197,6 +2197,55 @@ export const CATEGORY = [
   },
 ];
 
+// 品牌沿用现有菜单的演示价格与图片，ID 独立，保证规格、库存和分类关联一致。
+const extraDrinkBrands = [
+  { name: '益禾堂', type: '奶茶' },
+  { name: '书亦烧仙草', type: '奶茶' },
+  { name: '甜啦啦', type: '奶茶' },
+  { name: '柠季', type: '柠檬茶' },
+  { name: 'LINLEE林里', type: '柠檬茶' },
+  { name: '星巴克', type: '咖啡' },
+  { name: '瑞幸咖啡', type: '咖啡' },
+  { name: '库迪咖啡', type: '咖啡' },
+];
+const drinkCategory = CATEGORY.find((category) => category._id === 'CATE_MILK_CHILD');
+const drinkTemplate = SPU[1];
+const drinkSkuTemplate = SKU[1];
+const drinkAttrTemplate = ATTR_VALUE[1];
+extraDrinkBrands.forEach(({ name, type }, index) => {
+  const number = String(48 + index).padStart(3, '0');
+  const spuId = `P${number}_prod`;
+  const attrId = `V${number}_prod`;
+  SPU.splice(17 + index, 0, {
+    ...drinkTemplate,
+    _id: spuId,
+    name,
+    priority: 982.9 - index / 10,
+    monthSales: 0,
+    dishTags: [type],
+    swiper_images: [...drinkTemplate.swiper_images],
+    detail: `<p>${name}</p><p>想喝哪一款、几分糖、冰量如何，都可以写在备注里。</p>`,
+  });
+  SKU.push({
+    ...drinkSkuTemplate,
+    _id: `K${number}_prod`,
+    code: `SKU${number}`,
+    attribute_value: [attrId],
+    spu: { _id: spuId },
+    stock: { spu_id: spuId, count: 999, desc: name },
+    description: type,
+  });
+  ATTR_VALUE.push({
+    ...drinkAttrTemplate,
+    _id: attrId,
+    attribute: { attr_name: { ...drinkAttrTemplate.attribute.attr_name }, attr_value: type },
+  });
+  drinkCategory.spu.push({ _id: spuId });
+});
+CATEGORY.find((category) => category._id === 'CATE_MILK').name = '饮料';
+CATEGORY.find((category) => category._id === 'CATE_MILK').child_cate[0].name = '饮料';
+drinkCategory.name = '饮料';
+
 export const COMMENTS = [
   {
     owner: '1788891669799862274',

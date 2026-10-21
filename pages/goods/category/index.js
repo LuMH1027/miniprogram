@@ -3,7 +3,7 @@ import { getCates } from '../../../services/cate/cate';
 
 const FIXED_CATEGORY_CONFIG = [
   { key: 'all', title: '全部菜品', hint: '今天的喜欢，都在这里', icon: 'app', keywords: [] },
-  { key: 'milkTea', title: '喝杯奶茶', hint: '给日常加一点甜', icon: 'shop', keywords: ['奶茶'] },
+  { key: 'milkTea', title: '喝杯饮料', hint: '给日常加一点甜', icon: 'shop', keywords: ['饮料', '奶茶'] },
   { key: 'dessert', title: '来点甜品', hint: '留一点胃口给快乐', icon: 'heart', keywords: ['甜品'] },
   { key: 'meal', title: '好好吃饭', hint: '再忙也要按时吃饭', icon: 'time', keywords: ['饭饭'] },
 ];

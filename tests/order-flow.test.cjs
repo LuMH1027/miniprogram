@@ -2,12 +2,12 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createRuntime } = require('./helpers/miniprogram.cjs');
 
-test('all 47 real products expose usable stock and specifications', async () => {
+test('all menu products expose usable stock and specifications', async () => {
   const r = createRuntime();
   const { SPU } = r.load('services/cloudbaseMock/index.js');
   const { getAllSku, getSkuDetail } = r.load('services/sku/sku.js');
   const { getAllAttrValues } = r.load('services/attrValue/attrValue.js');
-  assert.equal(SPU.length, 47);
+  assert.equal(SPU.length, 55);
   for (const spu of SPU) {
     const [sku] = await getAllSku(spu._id);
     assert.equal(sku.count, 999, spu.name);
@@ -59,7 +59,7 @@ test('every real product can be added through its detail page', async () => {
     await detail.toAddCart();
   }
   const items = await r.load('services/cart/cart.js').fetchCartItems();
-  assert.equal(items.length, 47);
+  assert.equal(items.length, 55);
   assert(items.every(item => item.count === 1));
 });
 
@@ -375,7 +375,7 @@ test('orders survive module reload, count correctly and repeated detail reads do
   assert.equal(next.records[0]._id, first);
 });
 
-test('homepage loads all 47 unique products across pagination and empty carousel safely', async () => {
+test('homepage loads all menu products across pagination and empty carousel safely', async () => {
   const r = createRuntime();
   const page = r.instance('pages/home/home.js');
   await page.loadHomeSwiper();
@@ -385,8 +385,8 @@ test('homepage loads all 47 unique products across pagination and empty carousel
   await page.loadGoodsList();
   assert.equal(page.data.goodsList.length, 40);
   await page.loadGoodsList();
-  assert.equal(page.data.goodsList.length, 47);
-  assert.equal(new Set(page.data.goodsList.map(item => item._id)).size, 47);
+  assert.equal(page.data.goodsList.length, 55);
+  assert.equal(new Set(page.data.goodsList.map(item => item._id)).size, 55);
 });
 
 test('a successful order cannot be submitted again before navigation completes', async () => {
@@ -486,4 +486,34 @@ test('homepage recovers after a product-list fetch fails without skipping a page
   await page.loadGoodsList(true);
   assert.equal(page.data.goodsList.length, 20);
   assert.equal(page.goodListPagination.index, 2);
+});
+
+test('new drink brands appear in the drink category, search and direct ordering', async () => {
+  const brands = ['益禾堂', '书亦烧仙草', '甜啦啦', '柠季', 'LINLEE林里', '星巴克', '瑞幸咖啡', '库迪咖啡'];
+  const r = createRuntime();
+  const { getAllSpuOfCate } = r.load('services/cate/cate.js');
+  const { listGood } = r.load('services/good/spu.js');
+  const { spu: drinks } = await getAllSpuOfCate('CATE_MILK_CHILD');
+  assert.equal(drinks.length, 25);
+  assert.equal(new Set(drinks.map(item => item._id)).size, 25);
+  for (const name of brands) {
+    const drink = drinks.find(item => item.name === name);
+    assert(drink, name);
+    const { records, total } = await listGood({ pageSize: 30, pageNumber: 1, search: name });
+    assert.equal(total, 1, name);
+    assert.equal(records[0]._id, drink._id, name);
+    const detail = r.instance('pages/goods/details/index.js');
+    await detail.getInfo(drink._id);
+    await detail.buyItNow();
+    const confirm = r.instance('pages/order/order-confirm/index.js');
+    await confirm.onLoad(query(r.navigation.at(-1)));
+    await confirm.submitOrder();
+    assert.equal(r.notifications.at(-1).goodsList[0].title, name);
+  }
+  const home = r.instance('pages/home/home.js');
+  await home.navToCategory({ currentTarget: { dataset: { key: 'milkTea' } } });
+  assert.match(r.navigation.at(-1), /cateIds=CATE_MILK_CHILD/);
+  const categories = r.instance('pages/goods/category/index.js');
+  await categories.init();
+  assert.equal(categories.data.fixedCategories.find(item => item.key === 'milkTea').cateId, 'CATE_MILK_CHILD');
 });

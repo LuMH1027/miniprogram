@@ -1,12 +1,12 @@
 <view class="home-page-header">
   <view class="welcome-card">
-    <view class="welcome-eyebrow">两个人的小食光</view>
-    <view class="welcome-title">今天，想吃点什么？</view>
+    <view class="welcome-eyebrow">叉烧宝宝大王</view>
+    <view class="welcome-title">今天想吃什么？</view>
     <view class="welcome-subtitle">一杯喜欢的，一份想分享的。</view>
     <button class="welcome-action" bindtap="navToCategories" hover-class="sweet-pressed">一起挑一挑 <t-icon name="chevron-right" size="28rpx" /></button>
   </view>
   <view class="search" bindtap="navToSearchPage">
-    <t-search placeholder="搜搜想吃的奶茶、甜品" disabled t-class-input="t-search__input" t-class-input-container="t-search__input-container" />
+    <t-search placeholder="搜搜想喝的饮料、想吃的甜品" disabled t-class-input="t-search__input" t-class-input-container="t-search__input-container" />
   </view>
   <view class="quick-categories">
     <button wx:for="{{quickCategories}}" wx:key="key" class="quick-category" bindtap="navToCategory" data-key="{{item.key}}" hover-class="sweet-pressed">

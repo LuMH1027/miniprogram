@@ -9,7 +9,7 @@ Page({
   data: {
     imgSrcs: [],
     quickCategories: [
-      { key: 'milkTea', title: '喝杯奶茶', icon: 'shop' },
+      { key: 'milkTea', title: '喝杯饮料', icon: 'shop' },
       { key: 'dessert', title: '来点甜品', icon: 'heart' },
       { key: 'meal', title: '好好吃饭', icon: 'time' },
       { key: 'all', title: '全部菜品', icon: 'app' },
@@ -145,11 +145,11 @@ Page({
     try {
       const key = e.currentTarget.dataset.key;
       const category = this.data.quickCategories.find((item) => item.key === key);
-      const names = { milkTea: '奶茶', dessert: '甜品', meal: '饭饭' };
+      const names = { milkTea: ['饮料', '奶茶'], dessert: ['甜品'], meal: ['饭饭'] };
       let cateId = 'all';
       if (names[key]) {
         const cates = await getCates();
-        const matched = cates.flatMap((item) => item.child_cate || []).find((item) => String(item.name || '').includes(names[key]));
+        const matched = cates.flatMap((item) => item.child_cate || []).find((item) => names[key].some((name) => String(item.name || '').includes(name)));
         if (!matched) throw new Error('Category not available');
         cateId = matched._id;
       }
