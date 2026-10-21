@@ -1,0 +1,66 @@
+.tabbar-position {
+  position: fixed !important;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.wrap {
+  min-height: 100vh;
+  background: #fff8fb;
+  padding: 28rpx 24rpx calc(env(safe-area-inset-bottom) + 24rpx);
+}
+
+.category-header {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  box-shadow: 0 8rpx 20rpx rgba(255, 143, 177, 0.12);
+}
+
+.category-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #5a516d;
+}
+
+.category-subtitle {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #9c92b2;
+}
+
+.category-list {
+  margin-top: 20rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 16rpx;
+  row-gap: 16rpx;
+}
+
+.category-item {
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #ffdbe9 0%, #efe5ff 100%);
+  padding: 22rpx 20rpx;
+  min-height: 146rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.category-item__name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #5f5578;
+}
+
+.category-item__hint {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #8a7a9b;
+}
+
+page {
+  min-height: 100%;
+  padding-bottom: 0;
+}

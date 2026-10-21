@@ -1,0 +1,54 @@
+<t-pull-down-refresh id="t-pull-down-refresh" bindrefresh="onPullDownRefresh_" t-class-indicator="t-class-indicator">
+  <view class="order-detail">
+    <view class="simple-head">
+      <view class="simple-title">订单详情</view>
+      <view class="simple-subtitle">记录我们一起点过的甜甜时刻</view>
+    </view>
+
+    <view class="summary-card">
+      <view class="summary-row">
+        <text class="summary-label">时间</text>
+        <text class="summary-value">{{order.createdTimeString}}</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">总价</text>
+        <price fill class="summary-price" price="{{order.totalPrice * 100 || '0'}}" decimalSmaller />
+      </view>
+      <view class="summary-row summary-row--remark">
+        <text class="summary-label">备注</text>
+        <text class="summary-value">{{order.remarkText}}</text>
+      </view>
+    </view>
+
+    <view class="goods-card">
+      <view class="goods-card__title">商品明细</view>
+      <view wx:for="{{order.orderItems}}" wx:key="_id" wx:for-item="goods" wx:for-index="gIndex" class="goods-item" bindtap="onGoodsCardTap" data-index="{{gIndex}}">
+        <t-image src="{{goods.sku.image}}" t-class="goods-item__img" mode="aspectFill" />
+        <view class="goods-item__content">
+          <view class="goods-item__name">{{goods.sku.spu.name}}</view>
+          <view class="goods-item__spec">{{goods.sku.attr_value.length ? goods.sku.attr_value[0].value : ''}}</view>
+        </view>
+        <view class="goods-item__right">
+          <price fill class="goods-item__price" price="{{goods.sku.price * 100 || '0'}}" decimalSmaller />
+          <text class="goods-item__num">x{{goods.count}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="minor-card">
+      <view class="minor-row">
+        <text class="minor-label">订单编号</text>
+        <view class="minor-value" bindtap="onOrderNumCopy">
+          <text>{{order._id}}</text>
+          <text class="copy-btn">复制</text>
+        </view>
+      </view>
+      <view class="minor-row">
+        <text class="minor-label">状态</text>
+        <text class="minor-value">{{order.statusDesc}}</text>
+      </view>
+    </view>
+  </view>
+</t-pull-down-refresh>
+<t-toast id="t-toast" />
+<t-dialog id="t-dialog" />

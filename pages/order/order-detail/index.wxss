@@ -1,0 +1,154 @@
+:host {
+  background-color: #fff8fb;
+}
+
+.order-detail {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 20rpx 24rpx calc(env(safe-area-inset-bottom) + 24rpx);
+}
+
+.simple-head {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 22rpx 24rpx;
+  box-shadow: 0 8rpx 20rpx rgba(255, 143, 177, 0.12);
+}
+
+.simple-title {
+  font-size: 32rpx;
+  color: #5a516d;
+  font-weight: 600;
+}
+
+.simple-subtitle {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #9a90b0;
+}
+
+.summary-card,
+.goods-card,
+.minor-card {
+  margin-top: 16rpx;
+  border-radius: 20rpx;
+  background: #fff;
+  padding: 20rpx 24rpx;
+  box-shadow: 0 8rpx 20rpx rgba(255, 143, 177, 0.1);
+}
+
+.summary-row,
+.minor-row {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 10rpx;
+}
+
+.summary-row:first-child,
+.minor-row:first-child {
+  margin-top: 0;
+}
+
+.summary-label,
+.minor-label {
+  width: 96rpx;
+  flex-shrink: 0;
+  color: #8f85a8;
+  font-size: 24rpx;
+}
+
+.summary-value,
+.minor-value {
+  color: #4f4566;
+  font-size: 26rpx;
+  line-height: 36rpx;
+  word-break: break-word;
+}
+
+.summary-price {
+  color: #ff8fb1;
+  font-size: 36rpx;
+  line-height: 44rpx;
+  font-weight: 700;
+}
+
+.summary-row--remark {
+  border-top: 1rpx dashed #f1dbe6;
+  margin-top: 14rpx;
+  padding-top: 14rpx;
+}
+
+.goods-card__title {
+  color: #5f5578;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 6rpx;
+}
+
+.goods-item {
+  margin-top: 14rpx;
+  display: flex;
+  align-items: flex-start;
+}
+
+.goods-item:first-of-type {
+  margin-top: 10rpx;
+}
+
+.goods-item__img {
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 16rpx;
+  margin-right: 14rpx;
+  flex-shrink: 0;
+}
+
+.goods-item__content {
+  flex: 1;
+}
+
+.goods-item__name {
+  color: #4f4566;
+  font-size: 28rpx;
+  line-height: 40rpx;
+}
+
+.goods-item__spec {
+  margin-top: 6rpx;
+  color: #9a90b0;
+  font-size: 22rpx;
+  line-height: 30rpx;
+}
+
+.goods-item__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 10rpx;
+}
+
+.goods-item__price {
+  color: #ff8fb1;
+  font-size: 30rpx;
+  line-height: 38rpx;
+  font-weight: 700;
+}
+
+.goods-item__num {
+  margin-top: 8rpx;
+  color: #8f85a8;
+  font-size: 24rpx;
+}
+
+.copy-btn {
+  margin-left: 12rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+  border: 1rpx solid #f1dbe6;
+  color: #8f85a8;
+  font-size: 20rpx;
+}
+
+.t-class-indicator {
+  color: #b9b9b9 !important;
+}

@@ -1,0 +1,82 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/usercenter/index",
+    "pages/usercenter/person-info/index",
+    "pages/usercenter/address/list/index",
+    "pages/usercenter/address/edit/index",
+    "pages/goods/list/index",
+    "pages/goods/details/index",
+    "pages/goods/category/index",
+    "pages/goods/search/index",
+    "pages/goods/result/index",
+    "pages/cart/index",
+    "pages/order/order-confirm/index",
+    "pages/order/receipt/index",
+    "pages/order/pay-result/index",
+    "pages/order/order-list/index",
+    "pages/order/order-detail/index",
+    "pages/goods/comments/index",
+    "pages/order/apply-service/index",
+    "pages/order/after-service-list/index",
+    "pages/order/after-service-detail/index",
+    "pages/goods/comments/create/index",
+    "pages/goods/comments/create-list/index",
+    "pages/coupon/coupon-list/index",
+    "pages/coupon/coupon-detail/index",
+    "pages/coupon/coupon-activity-goods/index",
+    "pages/promotion-detail/index",
+    "pages/order/fill-tracking-no/index",
+    "pages/order/delivery-detail/index",
+    "pages/order/invoice/index",
+    "pages/usercenter/name-edit/index"
+  ],
+  "tabBar": {
+    "custom": true,
+    "color": "#666666",
+    "selectedColor": "#FF8FB1",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/goods/category/index",
+        "text": "分类"
+      },
+      {
+        "pagePath": "pages/cart/index",
+        "text": "点单车"
+      },
+      {
+        "pagePath": "pages/order/order-list/index",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/usercenter/index",
+        "text": "我们"
+      }
+    ]
+  },
+  "requiredPrivateInfos": [
+    "chooseAddress"
+  ],
+  "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {
+    "cloud-template-guide": "/components/cloud-template-guide/index"
+  },
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "甜甜点单",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于小程序位置接口的效果展示"
+    }
+  }
+}

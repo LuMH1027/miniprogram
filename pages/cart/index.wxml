@@ -1,0 +1,27 @@
+<cloud-template-guide />
+<!-- 点单车 -->
+<block wx:if="{{cartItems.length !== 0}}">
+  <cart-group cartItems="{{cartItems}}" bindselectgoods="onGoodsSelect" bindselectstore="onStoreSelect" bindchangequantity="onQuantityChange" bindgocollect="goCollect" bindgoodsclick="goGoodsDetail" bindclearinvalidgoods="clearInvalidGoods" binddelete="onGoodsDelete" />
+  <view class="cart-remark-card">
+    <view class="cart-remark-title">点单备注</view>
+    <t-textarea
+      value="{{remark}}"
+      maxlength="{{remarkMaxLength}}"
+      indicator
+      placeholder="比如：少冰、不要太甜、今天想要惊喜一点"
+      autosize
+      bind:change="onRemarkChange"
+      t-class="cart-remark-input"
+    />
+  </view>
+  <view class="gap" />
+  <!-- 菜品小计以及结算按钮 -->
+  <cart-bar is-all-selected="{{allSelected}}" total-amount="{{totalAmount * 100}}" total-goods-num="{{selectedCartItemNum}}" fixed="{{true}}" bottomHeight="{{112}}" bindhandleSelectAll="onSelectAll" bindhandleToSettle="onToSettle" />
+</block>
+<!-- 点单车空态 -->
+<cart-empty wx:else bind:handleClick="onGotoHome" />
+<t-toast id="t-toast" />
+<t-dialog id="t-dialog" />
+<view wx:if="{{loading}}">
+  <loading-dialog show="{{loading}}" />
+</view>

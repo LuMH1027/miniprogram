@@ -1,0 +1,35 @@
+<view class="page-container">
+  <view class="record-header">
+    <view class="record-title">我们的点单记录</view>
+    <view class="record-subtitle">按时间查看，一起点过的甜甜都在这里</view>
+  </view>
+  <t-pull-down-refresh loading-props="{{loadingProps}}" value="{{pullDownRefreshing}}" loadingTexts="{{['下拉刷新', '松手刷新', '正在刷新', '刷新完成']}}" bind:refresh="pullRefresh">
+    <view wx:for="{{orderList}}" wx:key="_id" wx:for-item="order" class="order-record-card" data-order="{{order}}" bindtap="onOrderCardTap">
+      <view class="record-row">
+        <text class="record-label">时间</text>
+        <text class="record-value">{{order.createTimeText}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">商品</text>
+        <text class="record-value record-value--ellipsis">{{order.itemSummary || '暂无商品'}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">总价</text>
+        <price fill class="record-price" price="{{order.totalPrice * 100 + ''}}" decimalSmaller />
+      </view>
+      <view class="record-row record-row--remark">
+        <text class="record-label">备注</text>
+        <text class="record-value">{{order.remarkText}}</text>
+      </view>
+    </view>
+    <!-- 列表加载中/已全部加载 -->
+    <load-more list-is-empty="{{!orderList.length}}" status="{{listLoading}}" bindretry="onReTryLoad">
+      <!-- 空态 -->
+      <view slot="empty" class="empty-wrapper">
+        <t-empty t-class="t-empty-text" src="{{emptyImg}}">还没有一起点过单，先去挑一份甜甜的吧</t-empty>
+      </view>
+    </load-more>
+  </t-pull-down-refresh>
+</view>
+<t-toast id="t-toast" />
+<t-dialog id="t-dialog" />

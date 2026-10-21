@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "点单记录",
+  "usingComponents": {
+    "t-empty": "tdesign-miniprogram/empty/empty",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-pull-down-refresh": "tdesign-miniprogram/pull-down-refresh/pull-down-refresh",
+    "load-more": "/components/load-more/index",
+    "price": "/components/price/index"
+  }
+}

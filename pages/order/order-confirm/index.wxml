@@ -1,0 +1,62 @@
+<view class="order-sure" wx:if="{{!loading}}">
+  <view class="confirm-head-card">
+    <view class="confirm-head-title">确认一下今天的甜甜点单</view>
+    <view class="confirm-head-subtitle">信息很简单：商品、备注、总价</view>
+  </view>
+
+  <address-card wx:if="{{false}}" addressData="{{userAddress}}" bind:addclick="onGotoAddress" bind:addressclick="onGotoAddress" />
+
+  <view class="section-card order-wrapper">
+    <view class="section-title">商品明细</view>
+    <view wx:if="{{goodsList.length > 0}}" wx:for="{{goodsList}}" wx:for-item="goods" wx:for-index="gIndex" wx:key="id" class="goods-wrapper">
+      <t-image src="{{goods.thumb}}" t-class="goods-image" mode="aspectFill" />
+      <view class="goods-content">
+        <view class="goods-title">{{goods.title}}</view>
+        <view class="goods-spec">{{goods.specs}}</view>
+      </view>
+      <view class="goods-right">
+        <price wr-class="goods-price" price="{{goods.price * 100}}" fill="{{true}}" decimalSmaller />
+        <view class="goods-num">x{{goods.num}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-card pay-detail">
+    <view class="pay-item">
+      <text>菜品总额</text>
+      <price fill decimalSmaller wr-class="pay-item__right font-bold" price="{{totalSalePrice * 100}}" />
+    </view>
+  </view>
+
+  <view class="section-card remark-section">
+    <view class="remark-title">订单备注</view>
+    <view class="remark-source" wx:if="{{remarkSourceText}}">{{remarkSourceText}}</view>
+    <t-textarea
+      value="{{remark}}"
+      maxlength="{{remarkMaxLength}}"
+      indicator
+      placeholder="比如：少冰、少糖、不要太甜"
+      autosize
+      bind:change="onRemarkChange"
+      t-class="remark-textarea"
+    />
+  </view>
+
+  <view class="section-card amount-wrapper">
+    <view class="pay-amount">
+      <text class="order-num">共{{goodsList.length}}份</text>
+      <text>小计</text>
+      <price class="total-price" price="{{totalSalePrice * 100}}" fill="{{false}}" decimalSmaller />
+    </view>
+  </view>
+  <view class="wx-pay-cover">
+    <view class="wx-pay">
+      <price decimalSmaller fill class="price" price="{{totalSalePrice * 100}}" />
+      <view class="submit-btn {{ !submitting ? '' : 'btn-gray'}}" bindtap="submitOrder">
+        {{submitting ? '提交中' : '提交订单'}}
+      </view>
+    </view>
+  </view>
+</view>
+<t-toast id="t-toast" />
+<t-dialog id="t-dialog" />
