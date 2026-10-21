@@ -6,7 +6,7 @@ Run with Node.js 22+:
 npm test
 ```
 
-The suite executes the actual page/component methods, service modules and all 55
+The suite executes the actual page/component methods, service modules and all 56
 products from `services/cloudbaseMock/index.js`. Each test gets separate in-memory
 storage and module state. The helper simulates `setData`, component observers,
 property updates, emitted events and navigation; it does not run the WXML renderer.

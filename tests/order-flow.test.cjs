@@ -7,7 +7,7 @@ test('all menu products expose usable stock and specifications', async () => {
   const { SPU } = r.load('services/cloudbaseMock/index.js');
   const { getAllSku, getSkuDetail } = r.load('services/sku/sku.js');
   const { getAllAttrValues } = r.load('services/attrValue/attrValue.js');
-  assert.equal(SPU.length, 55);
+  assert.equal(SPU.length, 56);
   for (const spu of SPU) {
     const [sku] = await getAllSku(spu._id);
     assert.equal(sku.count, 999, spu.name);
@@ -59,7 +59,7 @@ test('every real product can be added through its detail page', async () => {
     await detail.toAddCart();
   }
   const items = await r.load('services/cart/cart.js').fetchCartItems();
-  assert.equal(items.length, 55);
+  assert.equal(items.length, 56);
   assert(items.every(item => item.count === 1));
 });
 
@@ -385,8 +385,8 @@ test('homepage loads all menu products across pagination and empty carousel safe
   await page.loadGoodsList();
   assert.equal(page.data.goodsList.length, 40);
   await page.loadGoodsList();
-  assert.equal(page.data.goodsList.length, 55);
-  assert.equal(new Set(page.data.goodsList.map(item => item._id)).size, 55);
+  assert.equal(page.data.goodsList.length, 56);
+  assert.equal(new Set(page.data.goodsList.map(item => item._id)).size, 56);
 });
 
 test('a successful order cannot be submitted again before navigation completes', async () => {
@@ -489,13 +489,13 @@ test('homepage recovers after a product-list fetch fails without skipping a page
 });
 
 test('new drink brands appear in the drink category, search and direct ordering', async () => {
-  const brands = ['益禾堂', '书亦烧仙草', '甜啦啦', '柠季', 'LINLEE林里', '星巴克', '瑞幸咖啡', '库迪咖啡'];
+  const brands = ['益禾堂', '书亦烧仙草', '甜啦啦', '柠季', 'LINLEE林里', '星巴克', '瑞幸咖啡', '库迪咖啡', '茉酸奶'];
   const r = createRuntime();
   const { getAllSpuOfCate } = r.load('services/cate/cate.js');
   const { listGood } = r.load('services/good/spu.js');
   const { spu: drinks } = await getAllSpuOfCate('CATE_MILK_CHILD');
-  assert.equal(drinks.length, 25);
-  assert.equal(new Set(drinks.map(item => item._id)).size, 25);
+  assert.equal(drinks.length, 26);
+  assert.equal(new Set(drinks.map(item => item._id)).size, 26);
   for (const name of brands) {
     const drink = drinks.find(item => item.name === name);
     assert(drink, name);

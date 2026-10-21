@@ -2207,6 +2207,7 @@ const extraDrinkBrands = [
   { name: '星巴克', type: '咖啡' },
   { name: '瑞幸咖啡', type: '咖啡' },
   { name: '库迪咖啡', type: '咖啡' },
+  { name: '茉酸奶', type: '酸奶饮品' },
 ];
 const drinkCategory = CATEGORY.find((category) => category._id === 'CATE_MILK_CHILD');
 const drinkTemplate = SPU[1];
