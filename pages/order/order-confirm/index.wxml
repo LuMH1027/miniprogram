@@ -4,7 +4,6 @@
     <view class="confirm-head-subtitle">看看份数和口味，确认好了就提交吧。</view>
   </view>
 
-  <address-card wx:if="{{false}}" addressData="{{userAddress}}" bind:addclick="onGotoAddress" bind:addressclick="onGotoAddress" />
 
   <view class="section-card order-wrapper">
     <view class="section-title">商品明细</view>

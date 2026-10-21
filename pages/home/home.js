@@ -162,7 +162,4 @@ Page({
     }
   },
 
-  navToActivityDetail({ detail }) {
-    console.info('[phase-2-hidden-entry]', 'home-promotion', detail);
-  }
 });

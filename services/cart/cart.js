@@ -1,19 +1,10 @@
 import { model, getAll } from '../../services/_utils/model';
-import { config } from '../../config/index';
 import { DATA_MODEL_KEY } from '../../config/model';
 import { cloudbaseTemplateConfig } from '../../config/index';
 import { CART_ITEM, createId } from '../cloudbaseMock/index';
 import { getSkuDetail } from '../sku/sku';
 
 const CATE_ITEM_MODEL_KEY = DATA_MODEL_KEY.CART_ITEM;
-
-/** 获取购物车mock数据 */
-function mockFetchCartGroupData(params) {
-  const { delay } = require('../_utils/delay');
-  const { genCartGroupData } = require('../../model/cart');
-
-  return delay().then(() => genCartGroupData(params));
-}
 
 /**
  *
@@ -145,16 +136,5 @@ export async function updateCartItemCount({ cartItemId, count }) {
         },
       },
     },
-  });
-}
-
-/** 获取购物车数据 */
-export function fetchCartGroupData(params) {
-  if (config.useMock) {
-    return mockFetchCartGroupData(params);
-  }
-
-  return new Promise((resolve) => {
-    resolve('real api');
   });
 }

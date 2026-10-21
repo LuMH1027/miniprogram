@@ -36,13 +36,6 @@ const orderTagInfos = [
     tabType: ORDER_STATUS.FINISHED,
     status: 1,
   },
-  // {
-  //   title: '退款/售后',
-  //   iconName: 'exchang',
-  //   orderNum: 0,
-  //   tabType: 0,
-  //   status: 1,
-  // },
 ];
 
 const getDefaultData = () => ({
@@ -54,17 +47,10 @@ const getDefaultData = () => ({
   menuData,
   orderTagInfos,
   currAuthStep: 1,
-  versionNo: '',
-  toPayOrderCount: 0,
-  toSendOrderCount: 0,
 });
 
 Page({
   data: getDefaultData(),
-
-  onLoad() {
-    this.getVersionInfo();
-  },
 
   onShow() {
     this.getTabBar().init();
@@ -93,16 +79,7 @@ Page({
   },
 
   fetUseriInfoHandle() {
-    fetchUserCenter().then(({ userInfo, countsData }) => {
-      // eslint-disable-next-line no-unused-expressions
-      menuData?.[0].forEach((v) => {
-        countsData.forEach((counts) => {
-          if (counts.type === v.type) {
-            // eslint-disable-next-line no-param-reassign
-            v.tit = counts.num;
-          }
-        });
-      });
+    fetchUserCenter().then(({ userInfo }) => {
       this.setData({
         userInfo,
         menuData,
@@ -118,35 +95,6 @@ Page({
     switch (type) {
       case 'address': {
         wx.navigateTo({ url: '/pages/usercenter/address/list/index' });
-        break;
-      }
-      case 'service': {
-        this.toast('客服功能暂未开放');
-        break;
-      }
-      case 'help-center': {
-        Toast({
-          context: this,
-          selector: '#t-toast',
-          message: '你点击了帮助中心',
-          icon: '',
-          duration: 1000,
-        });
-        break;
-      }
-      case 'point': {
-        Toast({
-          context: this,
-          selector: '#t-toast',
-          message: '你点击了积分菜单',
-          icon: '',
-          duration: 1000,
-        });
-        break;
-      }
-      case 'coupon': {
-        this.logHiddenEntry('coupon');
-        this.toast('优惠功能暂未开放');
         break;
       }
       default: {
@@ -173,19 +121,7 @@ Page({
     wx.switchTab({ url: '/pages/order/order-list/index' });
   },
 
-  toast(message) {
-    Toast({
-      context: this,
-      selector: '#t-toast',
-      message,
-      icon: '',
-      duration: 1000,
-    });
-  },
 
-  logHiddenEntry(name) {
-    console.info('[phase-2-hidden-entry]', name);
-  },
 
   gotoUserEditPage() {
     const { currAuthStep } = this.data;
@@ -196,11 +132,4 @@ Page({
     }
   },
 
-  getVersionInfo() {
-    const versionInfo = wx.getAccountInfoSync();
-    const { version, envVersion = __wxConfig } = versionInfo.miniProgram;
-    this.setData({
-      versionNo: envVersion === 'release' ? version : envVersion,
-    });
-  },
 });

@@ -1,5 +1,5 @@
 import Dialog from 'tdesign-miniprogram/dialog/index';
-import { fetchCartGroupData, fetchCartItems, deleteCartItem, updateCartItemCount } from '../../services/cart/cart';
+import { fetchCartItems, deleteCartItem, updateCartItemCount } from '../../services/cart/cart';
 import { getSkuDetail } from '../../services/sku/sku';
 import { objectToParamString } from '../../utils/util';
 import { getSingleCloudImageTempUrl } from '../../utils/cloudImageHandler';
@@ -16,7 +16,6 @@ function sanitizeRemark(value = '') {
 
 Component({
   data: {
-    cartGroupData: null,
     cartItems: [],
     selectedCartItemNum: 0,
     allSelected: false,
@@ -39,21 +38,6 @@ Component({
         allSelected,
         totalAmount,
       });
-    },
-  },
-
-  lifetimes: {
-    attached: async function () {
-      // console.log('called attached');
-      // // 调用自定义tabbar的init函数，使页面与tabbar激活状态保持一致
-      // this.getTabBar().init();
-      // await this.setLoading();
-      // await this.setDataPromise({ inited: true });
-      // try {
-      //   await this.init();
-      // } finally {
-      //   await this.unsetLoading();
-      // }
     },
   },
 
@@ -96,99 +80,19 @@ Component({
       });
     },
 
-    findGoods(spuId, skuId) {
-      let currentStore;
-      let currentActivity;
-      let currentGoods;
-      const { storeGoods } = this.data.cartGroupData;
-      for (const store of storeGoods) {
-        for (const activity of store.promotionGoodsList) {
-          for (const goods of activity.goodsPromotionList) {
-            if (goods.spuId === spuId && goods.skuId === skuId) {
-              currentStore = store;
-              currentActivity = currentActivity;
-              currentGoods = goods;
-              return {
-                currentStore,
-                currentActivity,
-                currentGoods,
-              };
-            }
-          }
-        }
-      }
-      return {
-        currentStore,
-        currentActivity,
-        currentGoods,
-      };
-    },
-
     // 注：实际场景时应该调用接口获取购物车数据
-    getCartGroupData() {
-      const { cartGroupData } = this.data;
-      if (!cartGroupData) {
-        return fetchCartGroupData();
-      }
-      return Promise.resolve({ data: cartGroupData });
-    },
 
     // 选择单个菜品
     // 注：实际场景时应该调用接口更改选中状态
-    selectGoodsService({ spuId, skuId, isSelected }) {
-      this.findGoods(spuId, skuId).currentGoods.isSelected = isSelected;
-      return Promise.resolve();
-    },
 
     // 全选门店
     // 注：实际场景时应该调用接口更改选中状态
-    selectStoreService({ storeId, isSelected }) {
-      const currentStore = this.data.cartGroupData.storeGoods.find((s) => s.storeId === storeId);
-      currentStore.isSelected = isSelected;
-      currentStore.promotionGoodsList.forEach((activity) => {
-        activity.goodsPromotionList.forEach((goods) => {
-          goods.isSelected = isSelected;
-        });
-      });
-      return Promise.resolve();
-    },
 
     // 点单数量变更
     // 注：实际场景时应该调用接口
-    changeQuantityService({ spuId, skuId, quantity }) {
-      this.findGoods(spuId, skuId).currentGoods.quantity = quantity;
-      return Promise.resolve();
-    },
 
     // 删除点单菜品
     // 注：实际场景时应该调用接口
-    deleteGoodsService({ spuId, skuId }) {
-      function deleteGoods(group) {
-        for (const gindex in group) {
-          const goods = group[gindex];
-          if (goods.spuId === spuId && goods.skuId === skuId) {
-            group.splice(gindex, 1);
-            return gindex;
-          }
-        }
-        return -1;
-      }
-      const { storeGoods, invalidGoodItems } = this.data.cartGroupData;
-      for (const store of storeGoods) {
-        for (const activity of store.promotionGoodsList) {
-          if (deleteGoods(activity.goodsPromotionList) > -1) {
-            return Promise.resolve();
-          }
-        }
-        if (deleteGoods(store.shortageGoodsList) > -1) {
-          return Promise.resolve();
-        }
-      }
-      if (deleteGoods(invalidGoodItems) > -1) {
-        return Promise.resolve();
-      }
-      return Promise.reject();
-    },
 
     onGoodsSelect({ detail: { goods } }) {
       const { cartItems } = this.data;
@@ -235,10 +139,6 @@ Component({
         }
       });
       return this._cartSave;
-    },
-
-    goCollect() {
-      console.info('[phase-2-hidden-entry]', 'cart-promotion');
     },
 
     goGoodsDetail({

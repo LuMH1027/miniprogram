@@ -3,13 +3,11 @@ import { createOrderItem } from '../../../services/order/orderItem';
 import { createOrder, ORDER_STATUS, updateOrderStatus } from '../../../services/order/order';
 import { getCartItem, deleteCartItem } from '../../../services/cart/cart';
 import { getSkuDetail, updateSku } from '../../../services/sku/sku';
-import { getAddressPromise } from '../../usercenter/address/list/util';
 import { getSingleCloudImageTempUrl } from '../../../utils/cloudImageHandler';
 import { cartShouldFresh } from '../../../utils/cartFresh';
 import { pay } from '../../../services/pay/pay';
 import { notifyDeveloperOrder } from '../../../services/order/notifyDeveloper';
 
-const stripeImg = `https://cdn-we-retail.ym.tencent.com/miniapp/order/stripe.png`;
 const REMARK_MAX_LENGTH = 200;
 
 function sanitizeRemark(value = '') {
@@ -105,15 +103,7 @@ function cartItemToGoodList(cartItems) {
 
 Page({
   data: {
-    placeholder: '备注信息',
-    stripeImg,
     loading: true,
-    orderCardList: [], // 仅用于商品卡片展示
-    goodsRequestList: [],
-    userAddressReq: null,
-    storeInfoList: [],
-    promotionGoodsList: [], //当前门店商品列表(优惠券)
-    currentStoreId: null, //当前优惠券storeId
     userAddress: null,
     goodsList: [],
     cartItems: [],
@@ -225,14 +215,6 @@ Page({
     });
   },
 
-  init() {
-    this.setData({
-      loading: false,
-    });
-    const { goodsRequestList } = this;
-    this.handleOptionsParams({ goodsRequestList });
-  },
-
   toast(message) {
     Toast({
       context: this,
@@ -240,29 +222,6 @@ Page({
       message,
       duration: 1000,
       icon: '',
-    });
-  },
-
-  onGotoAddress() {
-    /** 获取一个Promise */
-    getAddressPromise()
-      .then((address) => {
-        this.setData({
-          userAddress: {
-            ...address,
-            detailAddress: address.address,
-          },
-        });
-      })
-      .catch(() => {});
-
-    wx.navigateTo({
-      url: `/pages/usercenter/address/list/index?selectMode=true`,
-    });
-  },
-  onTap() {
-    this.setData({
-      placeholder: '',
     });
   },
 

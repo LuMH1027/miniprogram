@@ -1,32 +1,14 @@
 /* eslint-disable no-param-reassign */
-import Toast from 'tdesign-miniprogram/toast/index';
 import { listGood, getPrice } from '../../../services/good/spu';
-import { fetchCartItems, createCartItem, updateCartItemCount } from '../../../services/cart/cart';
-import { getAllSku } from '../../../services/sku/sku';
 import { getCloudImageTempUrl } from '../../../utils/cloudImageHandler';
 import { LIST_LOADING_STATUS } from '../../../utils/listLoading';
-import { cartShouldFresh } from '../../../utils/cartFresh';
-
-const initFilters = {
-  overall: 1,
-  sorts: '',
-};
 
 Page({
   data: {
     goodsList: [],
-    sorts: '',
-    overall: 1,
-    show: false,
-    minVal: '',
-    maxVal: '',
-    minSalePriceFocus: false,
-    maxSalePriceFocus: false,
-    filter: initFilters,
     hasLoaded: false,
     keywords: '',
     loadMoreStatus: 0,
-    loading: true,
   },
 
   total: 0,
@@ -43,36 +25,6 @@ Page({
         this.init(true);
       },
     );
-  },
-
-  generalQueryData(reset = false) {
-    const { filter, keywords, minVal, maxVal } = this.data;
-    const { pageNum, pageSize } = this;
-    const { sorts, overall } = filter;
-    const params = {
-      sort: 0, // 0 综合，1 价格
-      pageNum: 1,
-      pageSize: 30,
-      keyword: keywords,
-    };
-
-    if (sorts) {
-      params.sort = 1;
-      params.sortType = sorts === 'desc' ? 1 : 0;
-    }
-    if (overall) {
-      params.sort = 0;
-    } else {
-      params.sort = 1;
-    }
-    params.minPrice = minVal ? minVal * 100 : 0;
-    params.maxPrice = maxVal ? maxVal * 100 : undefined;
-    if (reset) return params;
-    return {
-      ...params,
-      pageNum: pageNum + 1,
-      pageSize,
-    };
   },
 
   async init(reset = true) {
@@ -111,12 +63,6 @@ Page({
     }
   },
 
-  handleCartTap() {
-    wx.switchTab({
-      url: '/pages/cart/index',
-    });
-  },
-
   handleSubmit(e) {
     const keywords = e?.detail?.value ?? '';
     this.setData(
@@ -144,128 +90,10 @@ Page({
     this.init(false);
   },
 
-  async handleAddCart(e) {
-    const spuId = e?.detail?.goods?._id;
-    if (!spuId) return;
-
-    try {
-      const [pickedSku] = await getAllSku(spuId);
-      if (!pickedSku) {
-        throw new Error('sku empty');
-      }
-      const records = await fetchCartItems();
-      const cartItem = records.find((x) => x.sku._id === pickedSku._id);
-      if (cartItem) {
-        await updateCartItemCount({ cartItemId: cartItem._id, count: cartItem.count + 1 });
-      } else {
-        await createCartItem({ skuId: pickedSku._id, count: 1 });
-      }
-      cartShouldFresh();
-      Toast({
-        context: this,
-        selector: '#t-toast',
-        message: '已加入点单车',
-        icon: '',
-      });
-    } catch (err) {
-      console.error(err);
-      Toast({
-        context: this,
-        selector: '#t-toast',
-        message: '加入点单车失败',
-        icon: '',
-      });
-    }
-  },
-
   gotoGoodsDetail(e) {
     wx.navigateTo({
       url: `/pages/goods/details/index?spuId=${e.detail.goods._id}`,
     });
   },
 
-  handleFilterChange(e) {
-    const { overall, sorts } = e.detail;
-    const { total } = this;
-    const _filter = {
-      sorts,
-      overall,
-    };
-    this.setData({
-      filter: _filter,
-      sorts,
-      overall,
-    });
-
-    this.pageNum = 1;
-    this.setData(
-      {
-        goodsList: [],
-        loadMoreStatus: 0,
-      },
-      () => {
-        total && this.init(true);
-      },
-    );
-  },
-
-  showFilterPopup() {
-    this.setData({
-      show: true,
-    });
-  },
-
-  showFilterPopupClose() {
-    this.setData({
-      show: false,
-    });
-  },
-
-  onMinValAction(e) {
-    const { value } = e.detail;
-    this.setData({ minVal: value });
-  },
-
-  onMaxValAction(e) {
-    const { value } = e.detail;
-    this.setData({ maxVal: value });
-  },
-
-  reset() {
-    this.setData({ minVal: '', maxVal: '' });
-  },
-
-  confirm() {
-    const { minVal, maxVal } = this.data;
-    let message = '';
-    if (minVal && !maxVal) {
-      message = `价格最小是${minVal}`;
-    } else if (!minVal && maxVal) {
-      message = `价格范围是0-${minVal}`;
-    } else if (minVal && maxVal && minVal <= maxVal) {
-      message = `价格范围${minVal}-${this.data.maxVal}`;
-    } else {
-      message = '请输入正确范围';
-    }
-    if (message) {
-      Toast({
-        context: this,
-        selector: '#t-toast',
-        message,
-      });
-    }
-    this.pageNum = 1;
-    this.setData(
-      {
-        show: false,
-        minVal: '',
-        goodsList: [],
-        loadMoreStatus: 0,
-        maxVal: '',
-      },
-      () => {
-        this.init();
-      },
-    );
-  },
 });

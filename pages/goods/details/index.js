@@ -5,19 +5,12 @@ import Toast from 'tdesign-miniprogram/toast/index';
 import { getAllAttrValues } from '../../../services/attrValue/attrValue';
 import { handleSpuCloudImage, getSpu } from '../../../services/good/spu';
 import { fetchCartItems, createCartItem, updateCartItemCount } from '../../../services/cart/cart';
-import { getGoodsDetailCommentInfo } from '../../../services/comments/comments';
 import { getAllSku } from '../../../services/sku/sku';
 
 // 工具函数
-import { cdnBase } from '../../../config/index';
 import { cartShouldFresh } from '../../../utils/cartFresh';
 import { getCloudImageTempUrl, getSingleCloudImageTempUrl } from '../../../utils/cloudImageHandler';
 import { objectToParamString } from '../../../utils/util';
-
-const imgPrefix = `${cdnBase}/`;
-
-const recLeftImg = `${imgPrefix}common/rec-left.png`;
-const recRightImg = `${imgPrefix}common/rec-right.png`;
 
 async function replaceCloudImageWithTempUrl(text) {
   let ret = text;
@@ -50,19 +43,6 @@ function sanitizeQuickRemark(value = '') {
 
 Page({
   data: {
-    commentsList: [],
-    commentsStatistics: {
-      badCount: 0,
-      commentCount: 0,
-      goodCount: 0,
-      goodRate: 0,
-      hasImageCount: 0,
-      middleCount: 0,
-    },
-    isShowPromotionPop: false,
-    activityList: [],
-    recLeftImg,
-    recRightImg,
     details: {},
     jumpArray: [
       {
@@ -78,31 +58,17 @@ Page({
       },
     ],
     isStock: true,
-    cartNum: 0,
     soldout: false,
     buttonType: 1,
-    buyNum: 1,
-    selectedAttrStr: '',
     skuArray: [],
-    primaryImage: '',
-    specImg: '',
     isSpuSelectPopupShow: false,
-    isAllSelectedSku: false,
-    buyType: 0,
     outOperateStatus: OUT_OPERATE_STATUS.NO,
-    operateType: 0,
-    selectSkuSellsPrice: 0,
-    maxLinePrice: 0,
     minSalePrice: 0,
-    maxSalePrice: 0,
-    list: [],
-    spuId: '',
     navigation: { type: 'fraction' },
     current: 0,
     autoplay: true,
     duration: 500,
     interval: 5000,
-    soldNum: 0, // 已售数量,
     loading: false,
     quickRemarkOptions: ['少冰', '少糖', '惊喜一下'],
     selectedQuickRemark: '',
@@ -119,10 +85,6 @@ Page({
     this.setData({
       isSpuSelectPopupShow: false,
     });
-  },
-
-  onSpecSelectTap() {
-    this.showSkuSelectPopup(OUT_OPERATE_STATUS.NO);
   },
 
   showSkuSelectPopup(status) {
@@ -169,104 +131,6 @@ Page({
     wx.switchTab({
       url: url,
     });
-  },
-
-  showCurImg(e) {
-    const { index } = e.detail;
-    const { images } = this.data.details;
-    wx.previewImage({
-      current: images[index],
-      urls: images, // 需要预览的图片http链接列表
-    });
-  },
-
-  onPageScroll({ scrollTop }) {
-    const goodsTab = this.selectComponent('#goodsTab');
-    goodsTab && goodsTab.onScroll(scrollTop);
-  },
-
-  chooseSpecItem(e) {
-    const { specList } = this.data.details;
-    const { selectedSku, isAllSelectedSku } = e.detail;
-    if (!isAllSelectedSku) {
-      this.setData({
-        selectSkuSellsPrice: 0,
-      });
-    }
-    this.setData({
-      isAllSelectedSku,
-    });
-    this.getSkuItem(specList, selectedSku);
-  },
-
-  getSkuItem(specList, selectedSku) {
-    const { skuArray, primaryImage } = this.data;
-    const selectedSkuValues = this.getSelectedSkuValues(specList, selectedSku);
-    let selectedAttrStr = ` 件  `;
-    selectedSkuValues.forEach((item) => {
-      selectedAttrStr += `，${item.specValue}  `;
-    });
-    // eslint-disable-next-line array-callback-return
-    const skuItem = skuArray.filter((item) => {
-      let status = true;
-      (item.specInfo || []).forEach((subItem) => {
-        if (!selectedSku[subItem.specId] || selectedSku[subItem.specId] !== subItem.specValueId) {
-          status = false;
-        }
-      });
-      if (status) return item;
-    });
-    this.selectSpecsName(selectedSkuValues.length > 0 ? selectedAttrStr : '');
-    if (skuItem) {
-      this.setData({
-        selectItem: skuItem,
-        selectSkuSellsPrice: skuItem.price || 0,
-      });
-    } else {
-      this.setData({
-        selectItem: null,
-        selectSkuSellsPrice: 0,
-      });
-    }
-    this.setData({
-      specImg: skuItem && skuItem.skuImage ? skuItem.skuImage : primaryImage,
-    });
-  },
-
-  // 获取已选择的sku名称
-  getSelectedSkuValues(skuTree, selectedSku) {
-    const normalizedTree = this.normalizeSkuTree(skuTree);
-    return Object.keys(selectedSku).reduce((selectedValues, skuKeyStr) => {
-      const skuValues = normalizedTree[skuKeyStr];
-      const skuValueId = selectedSku[skuKeyStr];
-      if (skuValueId !== '') {
-        const skuValue = skuValues.filter((value) => {
-          return value.specValueId === skuValueId;
-        })[0];
-        skuValue && selectedValues.push(skuValue);
-      }
-      return selectedValues;
-    }, []);
-  },
-
-  normalizeSkuTree(skuTree) {
-    const normalizedTree = {};
-    skuTree.forEach((treeItem) => {
-      normalizedTree[treeItem.specId] = treeItem.specValueList;
-    });
-    return normalizedTree;
-  },
-
-  selectSpecsName(selectSpecsName) {
-    if (selectSpecsName) {
-      this.setData({
-        selectedAttrStr: selectSpecsName,
-      });
-    } else {
-      this.setData({
-        selectedAttrStr: '',
-      });
-    }
   },
 
   toast(message) {
@@ -330,10 +194,6 @@ Page({
     }
   },
 
-  onPicked() {
-    this.setData({ isAllSelectedSku: true });
-  },
-
   gotoBuy(e) {
     const overCount = () => this.toast('超过可点数量了');
     const buyCount = Number(e.detail.count);
@@ -358,44 +218,12 @@ Page({
     });
   },
 
-  specsConfirm() {
-    const { buyType } = this.data;
-    if (buyType === 1) {
-      this.gotoBuy();
-    } else {
-      this.addCart();
-    }
-  },
-
-  changeNum(e) {
-    this.setData({
-      buyNum: e.detail.buyNum,
-    });
-  },
-
-  closePromotionPopup() {
-    this.setData({
-      isShowPromotionPop: false,
-    });
-  },
-
-  promotionChange(e) {
-    console.info('[phase-2-hidden-entry]', 'promotion-detail', e.detail);
-    this.toast('活动功能暂未开放');
-  },
-
-  showPromotionPopup() {
-    console.info('[phase-2-hidden-entry]', 'promotion-popup');
-    this.toast('活动功能暂未开放');
-  },
-
   async getInfo(spuId) {
     // pics
     // min price
     // spu title
     // attrs => sku => count + price
     // spu detail
-    // comment
     const spu = await getSpu(spuId);
 
     const loadSkus = async () => {
@@ -418,22 +246,7 @@ Page({
       return { skus, minPrice };
     };
 
-    const [_x, { skus, minPrice }, commentInfo] = await Promise.all([
-      handleSpuCloudImage(spu),
-      loadSkus(),
-      getGoodsDetailCommentInfo(spu._id),
-    ]);
-
-    const [
-      {
-        data: { records, total: commentCount },
-      },
-      {
-        data: { total: goodCommentCount },
-      },
-    ] = commentInfo;
-
-    records.forEach((x) => (x.userNameString = x.createBy.substring(0, 10)));
+    const [, { skus, minPrice }] = await Promise.all([handleSpuCloudImage(spu), loadSkus()]);
 
     const detail = await replaceCloudImageWithTempUrl(spu.detail);
 
@@ -450,25 +263,10 @@ Page({
         spu,
       },
       skuArray: skus,
-      specImg: skus[0]?.image || spu.cover_image,
-      primaryImage: spu.cover_image,
-      isAllSelectedSku: skus.length === 1,
       isStock: skus.some((sku) => sku.count > 0),
       soldout: !skus.some((sku) => sku.count > 0),
-      selectedAttrStr: '',
-      commentsStatistics: {
-        commentCount,
-        goodRate: commentCount ? (goodCommentCount / commentCount) * 100 : 0,
-      },
       spu,
-      commentsList: records,
     });
-  },
-
-  /** 跳转到评价列表 */
-  navToCommentsListPage() {
-    console.info('[phase-2-hidden-entry]', 'goods-comments');
-      this.toast('菜品评价暂未开放');
   },
 
   async onLoad(query) {

@@ -4,7 +4,6 @@
     "t-pull-down-refresh": "tdesign-miniprogram/pull-down-refresh/pull-down-refresh",
     "t-image": "/components/webp-image/index",
     "t-toast": "tdesign-miniprogram/toast/toast",
-    "t-dialog": "tdesign-miniprogram/dialog/dialog",
     "price": "/components/price/index"
   }
 }

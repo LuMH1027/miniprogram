@@ -4,17 +4,7 @@ import { config } from '../../config/index';
 function mockFetchPerson() {
   const { delay } = require('../_utils/delay');
   const { genSimpleUserInfo } = require('../../model/usercenter');
-  const { genAddress } = require('../../model/address');
-  const address = genAddress();
-  return delay().then(() => ({
-    ...genSimpleUserInfo(),
-    address: {
-      provinceName: address.provinceName,
-      provinceCode: address.provinceCode,
-      cityName: address.cityName,
-      cityCode: address.cityCode,
-    },
-  }));
+  return delay().then(() => genSimpleUserInfo());
 }
 
 /** 获取个人中心信息 */

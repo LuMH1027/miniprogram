@@ -14,7 +14,8 @@ property updates, emitted events and navigation; it does not run the WXML render
 Coverage includes inventory normalization, SKU selection, adding and updating cart
 items, rapid quantity changes before checkout, selected-item totals, remark query
 encoding, direct/cart ordering, duplicate submission, stock rollback, payment and
-notification failures, order persistence, and homepage pagination/retry.
+notification failures, order persistence, homepage pagination/retry, page routes, component/import integrity, unused privacy
+API removal, address CRUD, and copying the displayed order number.
 
 Notifications are captured in memory. Unexpected cloud calls and real payments
 throw. Timers are controlled by the tests. No messages are sent to Feishu groups
