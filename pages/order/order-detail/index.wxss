@@ -140,15 +140,6 @@
   font-size: 24rpx;
 }
 
-.copy-btn {
-  margin-left: 12rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 20rpx;
-  border: 1rpx solid #f1dbe6;
-  color: #8f85a8;
-  font-size: 20rpx;
-}
-
 .t-class-indicator {
   color: #b9b9b9 !important;
 }

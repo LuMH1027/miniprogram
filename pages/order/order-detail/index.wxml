@@ -38,9 +38,8 @@
     <view class="minor-card">
       <view class="minor-row">
         <text class="minor-label">订单编号</text>
-        <view class="minor-value" bindtap="onOrderNumCopy">
+        <view class="minor-value">
           <text>{{order._id}}</text>
-          <text class="copy-btn">复制</text>
         </view>
       </view>
       <view class="minor-row">

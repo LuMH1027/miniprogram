@@ -94,10 +94,5 @@ Page({
     wx.navigateTo({ url: `/pages/goods/details/index?spuId=${spuId}` });
   },
 
-  onOrderNumCopy() {
-    wx.setClipboardData({
-      data: this.data.order._id,
-    });
-  },
 
 });

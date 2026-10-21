@@ -67,18 +67,8 @@ test('local imports, templates, styles and component registrations have no delet
 
 test('unused image, album, file and location APIs are absent from application source', () => {
   for (const file of ownFiles.filter(f => /\.(js|json)$/.test(f))) {
-    assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /wx\.(?:chooseImage|chooseMedia|chooseMessageFile|getClipboardData|saveImageToPhotosAlbum|getLocation|chooseAddress)\b|tdesign-miniprogram\/upload\//, file);
+    assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /wx\.(?:chooseImage|chooseMedia|chooseMessageFile|setClipboardData|getClipboardData|saveImageToPhotosAlbum|getLocation|chooseAddress)\b|tdesign-miniprogram\/upload\//, file);
   }
-});
-
-test('retained order number copy uses the displayed order ID', () => {
-  const r = createRuntime();
-  let copied;
-  r.wx.setClipboardData = args => { copied = args.data; };
-  const detail = r.instance('pages/order/order-detail/index.js');
-  detail.setData({ order: { _id: 'order-test-123' } });
-  detail.onOrderNumCopy();
-  assert.equal(copied, 'order-test-123');
 });
 
 test('retained address service can create, update, list and delete an address', async () => {
